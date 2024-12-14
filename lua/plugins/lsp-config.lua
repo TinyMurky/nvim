@@ -20,7 +20,7 @@ return {
 					"ts_ls", -- typescript
 					-- flutter config please check
 					-- https://github.com/RobertBrunhage/nvim/blob/96b9d5709fe857d8e8b5ac0608b6c84f21f8fe39/lua/plugins/lsp.lua
-					"astro", -- dart sdk ships with LSP
+					-- "astro", -- dart sdk ships with LSP
                     "eslint", -- eslint-lsp
 				},
 			})
@@ -63,13 +63,13 @@ return {
 
 			-- dart related setup
 
-			local dartExcludedFolders = {
-				-- vim.fn.expand("$HOME/AppData/Local/Pub/Cache"),
-				vim.fn.expand("$HOME/.pub-cache"),
-				-- vim.fn.expand("/opt/homebrew/"),
-				-- vim.fn.expand("$HOME/tools/flutter/"),
-				vim.fn.expand("$HOME/flutter/"), -- where my flutter installed
-			}
+		-- local dartExcludedFolders = {
+		-- 	-- vim.fn.expand("$HOME/AppData/Local/Pub/Cache"),
+		-- 	vim.fn.expand("$HOME/.pub-cache"),
+		-- 	-- vim.fn.expand("/opt/homebrew/"),
+		-- 	-- vim.fn.expand("$HOME/tools/flutter/"),
+		-- 	vim.fn.expand("$HOME/flutter/"), -- where my flutter installed
+		-- }
 
 			-- dcm dart code matric please watch: https://dcm.dev/docs/getting-started/installation/linux/?utm_source=chatgpt.com
 			-- download deb https://github.com/CQLabs/homebrew-dcm/releases
@@ -87,38 +87,38 @@ return {
 		-- 	},
 		-- })
 
-			lsp_config["dartls"].setup({
-				capabilities = capabilities,
-				cmd = {
-					"dart",
-					"language-server",
-					"--protocol=lsp",
-					-- "--port=8123",
-					-- "--instrumentation-log-file=/Users/robertbrunhage/Desktop/lsp-log.txt",
-				},
-				filetypes = { "dart" },
-				init_options = {
-					onlyAnalyzeProjectsWithOpenFiles = false,
-					suggestFromUnimportedLibraries = true,
-					closingLabels = true,
-					outline = false,
-					flutterOutline = false,
-				},
-				settings = {
-					dart = {
-						analysisExcludedFolders = dartExcludedFolders,
-						updateImportsOnRename = true,
-						completeFunctionCalls = true,
-						showTodos = true,
-					},
-				},
-			})
+		-- lsp_config["dartls"].setup({
+		-- 	capabilities = capabilities,
+		-- 	cmd = {
+		-- 		"dart",
+		-- 		"language-server",
+		-- 		"--protocol=lsp",
+		-- 		-- "--port=8123",
+		-- 		-- "--instrumentation-log-file=/Users/robertbrunhage/Desktop/lsp-log.txt",
+		-- 	},
+		-- 	filetypes = { "dart" },
+		-- 	init_options = {
+		-- 		onlyAnalyzeProjectsWithOpenFiles = false,
+		-- 		suggestFromUnimportedLibraries = true,
+		-- 		closingLabels = true,
+		-- 		outline = false,
+		-- 		flutterOutline = false,
+		-- 	},
+		-- 	settings = {
+		-- 		dart = {
+		-- 			analysisExcludedFolders = dartExcludedFolders,
+		-- 			updateImportsOnRename = true,
+		-- 			completeFunctionCalls = true,
+		-- 			showTodos = true,
+		-- 		},
+		-- 	},
+		-- })
 
-			lsp_config.astro.setup({
-				capabilities = capabilities,
-			})
+		-- lsp_config.astro.setup({
+		-- 	capabilities = capabilities,
+		-- })
 			-- Hot reload :)
-			require("dart-tools")
+		-- require("dart-tools")
 		end,
 	},
 }
