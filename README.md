@@ -9,6 +9,7 @@ neovim will read it automatically
 ## Pre-install
 Need to insatll `dcm` and `dart`
 
+- ripgrep for tree
 - dcm server please check [deb download linl](https://github.com/CQLabs/homebrew-dcm/releases) or check [dcm website](https://dcm.dev/docs/getting-started/installation/linux/?utm_source=chatgpt.com)
 - dart can be install by flutter
 - `wl-copy` in system for copy paste to clip board
