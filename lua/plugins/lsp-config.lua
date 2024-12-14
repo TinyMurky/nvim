@@ -73,19 +73,19 @@ return {
 
 			-- dcm dart code matric please watch: https://dcm.dev/docs/getting-started/installation/linux/?utm_source=chatgpt.com
 			-- download deb https://github.com/CQLabs/homebrew-dcm/releases
-			lsp_config["dcmls"].setup({
-				capabilities = capabilities,
-				cmd = {
-					"dcm",
-					"start-server",
-				},
-				filetypes = { "dart", "yaml" },
-				settings = {
-					dart = {
-						analysisExcludedFolders = dartExcludedFolders,
-					},
-				},
-			})
+		-- lsp_config["dcmls"].setup({
+		-- 	capabilities = capabilities,
+		-- 	cmd = {
+		-- 		"dcm",
+		-- 		"start-server",
+		-- 	},
+		-- 	filetypes = { "dart", "yaml" },
+		-- 	settings = {
+		-- 		dart = {
+		-- 			analysisExcludedFolders = dartExcludedFolders,
+		-- 		},
+		-- 	},
+		-- })
 
 			lsp_config["dartls"].setup({
 				capabilities = capabilities,
