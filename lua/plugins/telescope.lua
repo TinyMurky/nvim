@@ -9,6 +9,24 @@ return {
         },
         config = function()
             local builtin = require('telescope.builtin')
+            local actions = require("telescope.actions")
+            local trouble = require("trouble.sources.telescope") -- 引入 trouble.sources.telescope
+            local telescope = require('telescope')
+
+            -- trouble nvim
+            telescope.setup({
+                defaults = {
+                    mappings = {
+                        i = {
+                            ["<c-t>"] = trouble.open, -- 在插入模式中按 Ctrl-t 打開 Trouble
+                        },
+                        n = {
+                            ["<c-t>"] = trouble.open, -- 在普通模式中按 Ctrl-t 打開 Trouble
+                        },
+                    },
+                },
+            })
+
             vim.keymap.set('n', '<C-p>', builtin.find_files, { desc = 'Telescope find files' })
             -- neet to install ripfrep in system
             vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })

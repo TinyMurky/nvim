@@ -1,11 +1,6 @@
 return {
   "folke/trouble.nvim",
-  opts = {
-    action_keys = {
-      previous = "[q", -- 跳到上一個問題
-      next = "]q",     -- 跳到下一個問題
-    },
-  }, -- for default options, refer to the configuration section for custom setup.
+  opts = {}, -- for default options, refer to the configuration section for custom setup.
   cmd = "Trouble",
   keys = {
     {
