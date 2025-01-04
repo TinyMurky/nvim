@@ -20,5 +20,8 @@ return {
       -- Re-order to previous/next
       vim.keymap.set('n', '<A-<>', '<Cmd>BufferMovePrevious<CR>', {})
       vim.keymap.set('n', '<A->>', '<Cmd>BufferMoveNext<CR>', {})
+
+      -- close tab
+      vim.keymap.set('n', '<A-c>', '<Cmd>BufferClose<CR>', {})
     end
 }
