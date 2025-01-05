@@ -49,6 +49,7 @@ return {
 
 			lsp_config.ts_ls.setup({
 				capabilities = capabilities,
+        root_dir = lsp_config.util.root_pattern("package.json"),
 			})
 
 			lsp_config.eslint.setup({
@@ -61,6 +62,7 @@ return {
 
       lsp_config.denols.setup({
 				capabilities = capabilities,
+        root_dir = lsp_config.util.root_pattern("deno.json", "deno.jsonc"),
       })
 
 			-- setup lsp hover key bind to K (shift + k)
