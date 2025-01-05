@@ -20,6 +20,7 @@ return {
 					"ts_ls", -- typescript
 					"eslint", -- eslint-lsp
           "pylsp",
+          "denols", -- deno
 				},
 			})
 		end,
@@ -55,6 +56,10 @@ return {
 			})
 
       lsp_config.pylsp.setup({
+				capabilities = capabilities,
+      })
+
+      lsp_config.denols.setup({
 				capabilities = capabilities,
       })
 
