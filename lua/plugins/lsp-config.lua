@@ -50,6 +50,7 @@ return {
 			lsp_config.ts_ls.setup({
 				capabilities = capabilities,
         root_dir = lsp_config.util.root_pattern("package.json"),
+        single_file_support = false -- won't confict with deno
 			})
 
 			lsp_config.eslint.setup({
