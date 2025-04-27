@@ -10,7 +10,11 @@ return {
         -- "nvim-treesitter/nvim-treesitter", -- 已經裝過了
     },
     config = function()
+
+        -- store in ../utils/lsp_capabilities
+        local capabilities = require("utils.lsp_capabilities")
         require("go").setup({
+            diagnostic = false, -- 使用init.lua內的vim.diagnostic
             golangci_lint = {
                 default = 'standard', -- set to one of { 'standard', 'fast', 'all', 'none' }
                 -- disable = {'errcheck', 'staticcheck'}, -- linters to disable empty by default
@@ -30,6 +34,16 @@ return {
                 gotest = {
                     method = {"NULL_LS_DIAGNOSTICS_ON_SAVE"}, -- when it should run
                     severity = vim.diagnostic.severity.WARN, -- severity level of the diagnostics
+                },
+            },
+            lsp_cfg = { -- lsp auto complete
+                capabilities = capabilities,
+                settings = {
+                    gopls = {
+                        usePlaceholders = true,
+                        completeUnimported = true,
+                        staticcheck = true,
+                    },
                 },
             },
         })

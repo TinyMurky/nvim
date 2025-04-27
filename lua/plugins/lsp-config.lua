@@ -42,7 +42,8 @@ return {
 
 			-- this one brot cast cmp-nvim-lsp to lsp server
 			-- ever setup need to use this
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+			-- store in ../utils/lsp_capabilities
+			local capabilities = require("utils.lsp_capabilities")
 
 			lsp_config.lua_ls.setup({
 				capabilities = capabilities,
@@ -80,6 +81,8 @@ return {
 			vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
 			vim.keymap.set("n", "gd", vim.lsp.buf.definition, {})
 			vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, {})
+
+
 		end,
 	},
 }

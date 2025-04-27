@@ -38,6 +38,11 @@ Please use `:Mason` and visit lint to install linter like `revive`
 - `<ctrl> + c` in normal: copy to clipboard
 - `<ctrl> + p` in normal: paste to clipboard
 - `<leader>lg`: lazy git
+- `<leader> + i`: to see error message
+- `]e`: jump to next error
+- `]w`: jump to next warning
+- `[e`: jump to previous error
+- `[w`: jump to previous error
 
 > Telescope
 
