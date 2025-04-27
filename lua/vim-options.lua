@@ -16,9 +16,9 @@ vim.keymap.set('n', '<leader>p', '"+p', { desc = "Paste from clipboard" })
 -- Tab setting
 -- code inside vim.cmd to change setting of neovim
 vim.cmd("set expandtab")
-vim.cmd("set tabstop=2")
-vim.cmd("set softtabstop=2")
-vim.cmd("set shiftwidth=2")
+vim.cmd("set tabstop=4")
+vim.cmd("set softtabstop=4")
+vim.cmd("set shiftwidth=4")
 
 -- jump  between error
 local error_jump = require("utils.error_jump")
