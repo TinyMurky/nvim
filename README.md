@@ -10,7 +10,7 @@ neovim will read it automatically
 
 ## Pre-install
 
-Need to insatll `dcm` and `dart`
+Need to install `dcm` and `dart`
 
 - ripgrep for tree
 - dcm server please check [deb download linl](https://github.com/CQLabs/homebrew-dcm/releases) or check [dcm website](https://dcm.dev/docs/getting-started/installation/linux/?utm_source=chatgpt.com)
@@ -19,6 +19,12 @@ Need to insatll `dcm` and `dart`
 - Use `:Mason` to insatll formatter (press `i`) and lint that been used in `none-ls`
 - lazy git: https://github.com/jesseduffield/lazygit,
 - https://www.youtube.com/watch?v=CPLdltN7wgE
+
+## Install lint
+
+lint will not auto install
+
+Please use `:Mason` and visit lint to install linter like `revive`
 
 ## Cool command
 

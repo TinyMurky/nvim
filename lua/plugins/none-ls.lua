@@ -22,6 +22,10 @@ return {
                 -- Python
                 null_ls.builtins.formatting.black,
                 null_ls.builtins.formatting.isort,
+
+                -- Go
+                -- Ref: https://github.com/ray-x/go.nvim?tab=readme-ov-file#integrate-null-ls
+                null_ls.builtins.diagnostics.revive,
             },
         })
 
