@@ -19,8 +19,9 @@ return {
 					"lua_ls",
 					"ts_ls", -- typescript
 					"eslint", -- eslint-lsp
-          "pylsp",
-          "denols", -- deno
+					"pylsp",
+					"denols", -- deno
+					"gopls", -- go
 				},
 			})
 		end,
@@ -49,22 +50,28 @@ return {
 
 			lsp_config.ts_ls.setup({
 				capabilities = capabilities,
-        root_dir = lsp_config.util.root_pattern("package.json"),
-        single_file_support = false -- won't confict with deno
+				root_dir = lsp_config.util.root_pattern("package.json"),
+				single_file_support = false -- won't confict with deno
 			})
 
 			lsp_config.eslint.setup({
 				capabilities = capabilities,
 			})
 
-      lsp_config.pylsp.setup({
+			lsp_config.pylsp.setup({
 				capabilities = capabilities,
-      })
+			})
 
-      lsp_config.denols.setup({
+			lsp_config.denols.setup({
 				capabilities = capabilities,
-        root_dir = lsp_config.util.root_pattern("deno.json", "deno.jsonc"),
-      })
+				root_dir = lsp_config.util.root_pattern("deno.json", "deno.jsonc"),
+			})
+
+			-- For go
+			lsp_config.gopls.setup({
+				capabilities = capabilities,
+			})
+
 
 			-- setup lsp hover key bind to K (shift + k)
 			-- can open doc from server
