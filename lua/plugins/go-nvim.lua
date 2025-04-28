@@ -46,6 +46,9 @@ return {
                     },
                 },
             },
+            lsp_inlay_hints = {
+                enable = true, -- this is the only field apply to neovim > 0.10
+            },
         })
 
         -- 下面這個是存檔的時候自動排成go
