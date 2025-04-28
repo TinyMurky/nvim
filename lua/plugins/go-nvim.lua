@@ -46,20 +46,18 @@ return {
                     },
                 },
             },
-            lsp_inlay_hints = {
-                enable = true, -- this is the only field apply to neovim > 0.10
-            },
         })
 
         -- 下面這個是存檔的時候自動排成go
         local format_sync_grp = vim.api.nvim_create_augroup("GoFormat", {})
-            vim.api.nvim_create_autocmd("BufWritePre", {
+        vim.api.nvim_create_autocmd("BufWritePre", {
             pattern = "*.go",
             callback = function()
                 require('go.format').goimports()
             end,
             group = format_sync_grp,
         })
+
     end,
     event = { "CmdlineEnter" },
     ft = { "go", "gomod" },

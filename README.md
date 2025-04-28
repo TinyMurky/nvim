@@ -43,6 +43,7 @@ Please use `:Mason` and visit lint to install linter like `revive`
 - `]w`: jump to next warning
 - `[e`: jump to previous error
 - `[w`: jump to previous error
+- `<leader> + H (capital)`: open inlay hint
 
 > Telescope
 

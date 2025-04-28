@@ -35,6 +35,9 @@ return {
 			-- support for dart hot reload on save
 			"RobertBrunhage/dart-tools.nvim",
 		},
+		opts = { -- add hint
+			inlay_hints = { enabled = true },
+		},
 		config = function()
 			-- need to manually setup all lsp
 			-- https://github.com/neovim/nvim-lspconfig

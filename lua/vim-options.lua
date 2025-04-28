@@ -30,6 +30,17 @@ vim.keymap.set("n", "]w", function() error_jump.goto_diagnostic({ severity = vim
 vim.keymap.set("n", "[e", function() error_jump.goto_prev_diagnostic({ severity = vim.diagnostic.severity.ERROR }) end, { desc = "Jump to previous error" })
 vim.keymap.set("n", "[w", function() error_jump.goto_prev_diagnostic({ severity = vim.diagnostic.severity.WARN }) end, { desc = "Jump to previous warning" })
 
+-- 主動打開inlay hint
+vim.keymap.set('n', '<leader>H',
+    function()
+    	if vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }) then
+    		vim.lsp.inlay_hint.enable(false, { bufnr = 0 })
+    	else
+    		vim.lsp.inlay_hint.enable(true, { bufnr = 0 })
+    	end
+    end
+)
+
 -- line number in the left
 vim.wo.relativenumber = true
 
