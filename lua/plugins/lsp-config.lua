@@ -76,26 +76,6 @@ return {
 				capabilities = capabilities,
 			})
 
-
-			-- 漂亮的圓角框設定 for hover 和 signature help
-			vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
-				vim.lsp.handlers.hover,
-				{
-					border = "rounded",
-					max_width = 80,
-					max_height = 20,
-				}
-			)
-
-			vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
-			vim.lsp.handlers.signature_help,
-				{
-					border = "rounded",
-					max_width = 80,
-					max_height = 20,
-				}
-			)
-
 			-- setup lsp hover key bind to K (shift + k)
 			-- can open doc from server
 			-- Check youtube for more command

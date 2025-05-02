@@ -42,6 +42,10 @@ vim.diagnostic.config({
 
 -- vim tweak, vim key bind
 require("vim-options")
+
+-- ui settubg
+require("ui-setting")
+
 -- Load Lazy
 -- package in plugins will be download, but neet to use require mannually
 require("lazy").setup("plugins") -- plugins.lua
