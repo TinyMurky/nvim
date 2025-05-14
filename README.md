@@ -44,6 +44,7 @@ Please use `:Mason` and visit lint to install linter like `revive`
 - `[e`: jump to previous error
 - `[w`: jump to previous error
 - `<leader> + H (capital)`: open inlay hint
+- `gc`: change line to command
 
 > Telescope
 
