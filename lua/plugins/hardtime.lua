@@ -10,6 +10,7 @@ return {
     -- disabled_filetypes = { "qf", "netrw", "NvimTree", "lazy", "mason", "oil" },
     -- 其他預設選項可以留空或自訂
     notification = true,
+    disable_mouse = false,
   },
   config = function(_, opts)
     require("hardtime").setup(opts)
