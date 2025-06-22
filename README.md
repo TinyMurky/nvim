@@ -53,6 +53,37 @@ Please use `:Mason` and visit lint to install linter like `revive`
 - `<leader> + fg`: Telescope buffers'
 - `<leader> + fg`: 'Telescope help tags'
 
+> Split scream
+
+- `<leader> + sl` : Open right
+- `<leader> + sk` : Open up
+- `<leader> + sj` : Open down
+- `<leader> + sh` : Open left
+
+> Smart Splits
+
+🚀 Resize split
+
+- `<A-h>` : Shrink window to the left
+- `<A-j>` : Shrink window downward
+- `<A-k>` : Shrink window upward
+- `<A-l>` : Shrink window to the right
+
+🧭 Move between splits
+
+- `<C-h>` : Move to the left split
+- `<C-j>` : Move to the split below
+- `<C-k>` : Move to the split above
+- `<C-l>` : Move to the right split
+- `<C-\>` : Move to the last active split
+
+🔄 Swap buffers between splits
+
+- `<leader><leader>h` : Swap buffer to the left split
+- `<leader><leader>j` : Swap buffer to the bottom split
+- `<leader><leader>k` : Swap buffer to the top split
+- `<leader><leader>l` : Swap buffer to the right split
+
 ## Unit test with [gotests](https://github.com/cweill/gotests) and testify
 
 > Ref [go.nvim](https://github.com/ray-x/go.nvim)

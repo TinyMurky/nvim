@@ -49,3 +49,7 @@ require("ui-setting")
 -- Load Lazy
 -- package in plugins will be download, but neet to use require mannually
 require("lazy").setup("plugins") -- plugins.lua
+
+-- monitor-split key binding
+-- need to load behind lazy
+require("monitor-split-options")
