@@ -11,6 +11,7 @@ return {
         local null_ls = require("null-ls") -- none-ls is call null-ls
 
         null_ls.setup({
+            debug = true, -- ✅ 加上 debug 模式
             sources = {
                 -- remember to download it with `:Mason` => find formmatter => find stylua, press `i` to install
                 null_ls.builtins.formatting.stylua,

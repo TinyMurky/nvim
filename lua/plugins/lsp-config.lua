@@ -22,6 +22,8 @@ return {
 					"pylsp",
 					"denols", -- deno
 					"gopls", -- go
+					"dockerls", -- dockerfile-language-server
+					"docker_compose_language_service", --  docker-compose-language-service
 				},
 			})
 		end,
@@ -73,6 +75,15 @@ return {
 
 			-- For go
 			lsp_config.gopls.setup({
+				capabilities = capabilities,
+			})
+
+			-- For docker
+			lsp_config.dockerls.setup({
+				capabilities = capabilities,
+			})
+
+			lsp_config.docker_compose_language_service.setup({
 				capabilities = capabilities,
 			})
 
