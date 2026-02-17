@@ -26,6 +26,51 @@ lint will not auto install
 
 Please use `:Mason` and visit lint to install linter like `revive`
 
+## Tmux Integration
+
+This project includes a pre-configured `tmux.conf` in `./tmux/tmux.conf` that seamlessly integrates with Neovim using `smart-splits.nvim`.
+
+### How to use it?
+
+1.  Symlink the `tmux.conf` to your home directory:
+    ```bash
+    ln -s ~/.config/nvim/tmux/tmux.conf ~/.tmux.conf
+    ```
+2.  Reload tmux configuration:
+    ```bash
+    tmux source ~/.tmux.conf
+    ```
+
+### Key Features (Seamless between Tmux & Neovim)
+
+🧭 **Move between splits (Tmux Panes & Neovim Splits)**
+
+- `<C-h>` : Move to the left split/pane
+- `<C-j>` : Move to the split/pane below
+- `<C-k>` : Move to the split/pane above
+- `<C-l>` : Move to the right split/pane
+- `<C-\>` : Move to the last active split/pane
+
+🚀 **Resize split (Tmux Panes & Neovim Splits)**
+
+- `<A-h>` (Alt+h) : Shrink/Resize to the left
+- `<A-j>` (Alt+j) : Shrink/Resize downward
+- `<A-k>` (Alt+k) : Shrink/Resize upward
+- `<A-l>` (Alt+l) : Shrink/Resize to the right
+
+✂️ **Split Panes (Tmux logic aligned with Neovim)** 
+
+(Prefix is Ctrl-a)
+it need to press Ctrl-a => release => next buttom
+
+- `Prefix + h` : Split pane to the left (hb)
+- `Prefix + j` : Split pane downward (v)
+- `Prefix + k` : Split pane upward (vb)
+- `Prefix + l` : Split pane to the right (h)
+- `Prefix + x` : kill
+
+---
+
 ## Cool command
 
 ### Code Related
