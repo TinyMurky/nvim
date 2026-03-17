@@ -181,6 +181,14 @@ Three configs are available per language (select when you press `<F5>`):
 
 > Ref [go.nvim](https://github.com/ray-x/go.nvim)
 
+### Keymaps
+
+| Key | Action |
+| --- | --- |
+| `<leader>tf` | Run test for current function (`GoTestFunc`) |
+| `<leader>tF` | Run test for current file (`GoTestFile`) |
+
+
 Support table based unit test auto generate, parse current function/method name using treesitter
 
 | command                  | Description                                             |

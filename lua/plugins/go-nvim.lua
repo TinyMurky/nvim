@@ -48,6 +48,9 @@ return {
             },
         })
 
+        vim.keymap.set('n', '<leader>tf', '<cmd>GoTestFunc<cr>', { desc = "Go: test current function" })
+        vim.keymap.set('n', '<leader>tF', '<cmd>GoTestFile<cr>', { desc = "Go: test current file" })
+
         -- 下面這個是存檔的時候自動排成go
         local format_sync_grp = vim.api.nvim_create_augroup("GoFormat", {})
         vim.api.nvim_create_autocmd("BufWritePre", {
