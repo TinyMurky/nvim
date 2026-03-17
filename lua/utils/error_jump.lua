@@ -2,9 +2,7 @@
 local M = {}
 
 M.pos_equal = function (p1, p2)
-  local r1, c1 = table.unpack(p1)
-  local r2, c2 = table.unpack(p2)
-  return r1 == r2 and c1 == c2
+  return p1[1] == p2[1] and p1[2] == p2[2]
 end
 
 M.goto_diagnostic = function (opts)
