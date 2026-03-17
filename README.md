@@ -129,6 +129,54 @@ it need to press Ctrl-a => release => next buttom
 - `<leader><leader>k` : Swap buffer to the top split
 - `<leader><leader>l` : Swap buffer to the right split
 
+## Debugger (nvim-dap)
+
+Supports Go, Python, JavaScript, and TypeScript. The UI opens automatically when a debug session starts.
+
+### First-time setup
+
+After opening Neovim, run:
+
+```
+:Lazy sync
+```
+
+This installs all plugins. Mason will also auto-install `delve` (Go) and `debugpy` (Python).
+
+**JavaScript / TypeScript** requires `node` and `npm` on your system. The `vscode-js-debug` adapter is compiled automatically during plugin install.
+
+### Keymaps
+
+| Key | Action |
+| --- | --- |
+| `<F5>` | Continue / Start |
+| `<F10>` | Step over |
+| `<F11>` | Step into |
+| `<F12>` | Step out |
+| `<Leader>b` | Toggle breakpoint |
+| `<Leader>B` | Set conditional breakpoint |
+| `<Leader>lp` | Set log point |
+| `<Leader>dr` | Open REPL |
+| `<Leader>dl` | Re-run last session |
+
+### Language adapters
+
+| Language | Adapter | Installed by |
+| --- | --- | --- |
+| Go | `nvim-dap-go` (Delve) | Mason (`delve`) |
+| Python | `nvim-dap-python` (debugpy) | Mason (`debugpy`) |
+| JavaScript / TypeScript | `nvim-dap-vscode-js` (vscode-js-debug) | npm build step |
+
+### JS/TS debug configurations
+
+Three configs are available per language (select when you press `<F5>`):
+
+- **Launch file** — runs the current file with Node
+- **Attach to process** — attaches to a running `node --inspect` process
+- **Launch Chrome** — opens Chrome pointed at `http://localhost:3000` (for frontend/React)
+
+---
+
 ## Unit test with [gotests](https://github.com/cweill/gotests) and testify
 
 > Ref [go.nvim](https://github.com/ray-x/go.nvim)

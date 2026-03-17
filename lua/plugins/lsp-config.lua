@@ -7,7 +7,7 @@ return {
 			require("mason").setup()
 		end,
 	},
-	-- connect between  mason and
+	-- connect between mason and lspconfig
 	{
 		"williamboman/mason-lspconfig.nvim",
 		config = function()
@@ -28,7 +28,7 @@ return {
 			})
 		end,
 	},
-	-- the lsp config that neo vim actually use
+	-- the lsp config that neovim actually uses
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
@@ -41,61 +41,65 @@ return {
 			inlay_hints = { enabled = true },
 		},
 		config = function()
-			-- need to manually setup all lsp
-			-- https://github.com/neovim/nvim-lspconfig
-			local lsp_config = require("lspconfig")
-
-			-- this one brot cast cmp-nvim-lsp to lsp server
-			-- ever setup need to use this
+			-- this one broadcasts cmp-nvim-lsp capabilities to lsp servers
 			-- store in ../utils/lsp_capabilities
 			local capabilities = require("utils.lsp_capabilities")
 
-			lsp_config.lua_ls.setup({
+			vim.lsp.config("lua_ls", {
 				capabilities = capabilities,
 			})
 
-			lsp_config.ts_ls.setup({
+			-- ts_ls only activates for package.json projects (won't conflict with deno)
+			vim.lsp.config("ts_ls", {
 				capabilities = capabilities,
-				root_dir = lsp_config.util.root_pattern("package.json"),
-				single_file_support = false -- won't confict with deno
+				root_dir = function(bufnr)
+					return vim.fs.root(bufnr, { "package.json" })
+				end,
+				single_file_support = false,
 			})
 
-			lsp_config.eslint.setup({
-				capabilities = capabilities,
-			})
-
-			lsp_config.pylsp.setup({
-				capabilities = capabilities,
-			})
-
-			lsp_config.denols.setup({
-				capabilities = capabilities,
-				root_dir = lsp_config.util.root_pattern("deno.json", "deno.jsonc"),
-			})
-
-			-- For go
-			lsp_config.gopls.setup({
+			vim.lsp.config("eslint", {
 				capabilities = capabilities,
 			})
 
-			-- For docker
-			lsp_config.dockerls.setup({
+			vim.lsp.config("pylsp", {
 				capabilities = capabilities,
 			})
 
-			lsp_config.docker_compose_language_service.setup({
+			-- denols only activates for deno.json / deno.jsonc projects
+			vim.lsp.config("denols", {
+				capabilities = capabilities,
+				root_dir = function(bufnr)
+					return vim.fs.root(bufnr, { "deno.json", "deno.jsonc" })
+				end,
+			})
+
+			vim.lsp.config("gopls", {
 				capabilities = capabilities,
 			})
 
-			-- setup lsp hover key bind to K (shift + k)
-			-- can open doc from server
-			-- Check youtube for more command
-			-- https://www.youtube.com/watch?v=S-xzYgTLVJE&list=PLsz00TDipIffreIaUNk64KxTIkQaGguqn&index=3
+			vim.lsp.config("dockerls", {
+				capabilities = capabilities,
+			})
+
+			vim.lsp.config("docker_compose_language_service", {
+				capabilities = capabilities,
+			})
+
+			vim.lsp.enable({
+				"lua_ls",
+				"ts_ls",
+				"eslint",
+				"pylsp",
+				"denols",
+				"gopls",
+				"dockerls",
+				"docker_compose_language_service",
+			})
+
 			vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
 			vim.keymap.set("n", "gd", vim.lsp.buf.definition, {})
 			vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, {})
-
-
 		end,
 	},
 }
