@@ -69,6 +69,28 @@ it need to press Ctrl-a => release => next buttom
 - `Prefix + l` : Split pane to the right (h)
 - `Prefix + x` : kill
 
+### Install TPM
+
+```
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```
+
+put this line at the bottom of `./tmux/tmux.conf`
+```
+# 這裡列出你想要安裝的外掛
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+
+# 加入你剛才想要的 Nord 主題
+set -g @plugin 'nordtheme/tmux'
+
+# 初始化 TMUX 外掛管理員 (這行必須保持在檔案最底部)
+run '~/.tmux/plugins/tpm/tpm'
+```
+
+use `tmux source ~/.tmux.conf` to refresh settings
+use `prefix + I` to install plugin
+
 ---
 
 ## Cool command
