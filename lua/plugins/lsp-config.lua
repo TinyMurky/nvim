@@ -62,8 +62,37 @@ return {
 				capabilities = capabilities,
 			})
 
-			vim.lsp.config("pylsp", {
-				capabilities = capabilities,
+			-- pylsp: prefer .venv/bin/pylsp in project root, fallback to Mason's pylsp
+			-- Install in project: uv add --dev python-lsp-server
+			-- Install globally (Mason fallback): :MasonInstall pylsp
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "python",
+				callback = function(args)
+					-- uv.lock is checked first as the primary marker for uv-managed projects
+					local root = vim.fs.root(args.buf, {
+						"uv.lock",
+						"pyproject.toml",
+						"setup.py",
+						"setup.cfg",
+						".git",
+					})
+
+					-- Use .venv/bin/pylsp if it exists, otherwise fall back to Mason's pylsp
+					local cmd = { "pylsp" }
+					if root then
+						local venv_pylsp = root .. "/.venv/bin/pylsp"
+						if vim.fn.executable(venv_pylsp) == 1 then
+							cmd = { venv_pylsp }
+						end
+					end
+
+					vim.lsp.start({
+						name = "pylsp",
+						cmd = cmd,
+						root_dir = root,
+						capabilities = capabilities,
+					})
+				end,
 			})
 
 			-- denols only activates for deno.json / deno.jsonc projects
@@ -90,7 +119,7 @@ return {
 				"lua_ls",
 				"ts_ls",
 				"eslint",
-				"pylsp",
+				-- pylsp is handled via FileType autocommand above (dynamic .venv detection)
 				"denols",
 				"gopls",
 				"dockerls",
