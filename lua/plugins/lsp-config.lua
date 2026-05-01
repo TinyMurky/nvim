@@ -25,6 +25,11 @@ return {
 					"dockerls", -- dockerfile-language-server
 					"docker_compose_language_service", --  docker-compose-language-service
 				},
+				-- pylsp is excluded because it's managed by a FileType autocommand
+				-- that dynamically picks .venv/bin/pylsp over Mason's pylsp
+				automatic_enable = {
+					exclude = { "pylsp" },
+				},
 			})
 		end,
 	},
@@ -63,7 +68,8 @@ return {
 			})
 
 			-- pylsp: prefer .venv/bin/pylsp in project root, fallback to Mason's pylsp
-			-- Install in project: uv add --dev python-lsp-server
+			-- Install in project: uv add --dev python-lsp-server pyflakes
+			-- Or install with all built-in plugins: uv add --dev "python-lsp-server[all]"
 			-- Install globally (Mason fallback): :MasonInstall pylsp
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = "python",
