@@ -91,6 +91,20 @@ run '~/.tmux/plugins/tpm/tpm'
 use `tmux source ~/.tmux.conf` to refresh settings
 use `prefix + I` to install plugin
 
+### Session Persistence (tmux-resurrect + tmux-continuum)
+
+Tmux sessions are lost on reboot by default. These plugins save and restore them.
+
+- `tmux-resurrect`: manual save/restore
+- `tmux-continuum`: auto-saves every 15 minutes and restores on boot
+
+| Key | Action |
+| --- | --- |
+| `Prefix + Ctrl-s` | Save session |
+| `Prefix + Ctrl-r` | Restore session |
+
+Auto-restore on boot is enabled via `@continuum-restore 'on'` in `tmux.conf`.
+
 ---
 
 ## Cool command
