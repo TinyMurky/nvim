@@ -27,6 +27,9 @@ return {
                 -- Go
                 -- Ref: https://github.com/ray-x/go.nvim?tab=readme-ov-file#integrate-null-ls
                 null_ls.builtins.diagnostics.revive,
+
+                -- Rust
+                null_ls.builtins.formatting.rustfmt,
             },
         })
 
@@ -38,6 +41,14 @@ return {
         -- auto format Python on save
         vim.api.nvim_create_autocmd("BufWritePre", {
             pattern = "*.py",
+            callback = function()
+                vim.lsp.buf.format({ async = false })
+            end,
+        })
+
+        -- auto format Rust on save
+        vim.api.nvim_create_autocmd("BufWritePre", {
+            pattern = "*.rs",
             callback = function()
                 vim.lsp.buf.format({ async = false })
             end,

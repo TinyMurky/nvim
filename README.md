@@ -213,6 +213,78 @@ Three configs are available per language (select when you press `<F5>`):
 
 ---
 
+## Rust (rustaceanvim)
+
+> Powered by [rustaceanvim](https://github.com/mrcjkb/rustaceanvim) + `rust-analyzer` + `codelldb`
+
+### First-time setup
+
+**1. Install Rust toolchain components**
+
+```bash
+rustup component add rust-analyzer
+rustup component add clippy
+```
+
+**2. Install plugins and debugger**
+
+Open Neovim and run:
+
+```
+:Lazy sync
+```
+
+This installs `rustaceanvim`. Mason will also auto-install `codelldb` (the Rust debugger).
+
+### Features
+
+| Feature | Detail |
+| --- | --- |
+| LSP | `rust-analyzer` managed by rustaceanvim |
+| Linter | `clippy` runs on every save (via `check.command`) |
+| Formatter | `rustfmt` via none-ls, auto-runs on save |
+| Debugger | `codelldb` via Mason + nvim-dap |
+| Cargo features | All features enabled by default (`allFeatures = true`) |
+
+### Keymaps
+
+**Standard LSP (inherited)**
+
+| Key | Action |
+| --- | --- |
+| `K` | Hover documentation |
+| `gd` | Go to definition |
+| `<leader>ca` | Code action |
+| `<space>f` | Format |
+
+**Rust-specific (rustaceanvim)**
+
+| Command | Action |
+| --- | --- |
+| `:RustLsp runnables` | List and run all `cargo run` / `cargo test` targets |
+| `:RustLsp debuggables` | List and debug targets with codelldb |
+| `:RustLsp expandMacro` | Expand macro under cursor (recursive) |
+| `:RustLsp codeAction` | Richer code actions than standard `<leader>ca` |
+| `:RustLsp hover actions` | Hover with extra Rust-specific actions |
+| `:RustLsp explainError` | Explain the diagnostic error under cursor |
+| `:RustLsp renderDiagnostic` | Render diagnostic as rendered rustc output |
+| `:RustLsp flyCheck` | Manually trigger `cargo check` / `clippy` |
+| `:RustLsp openDocs` | Open docs.rs for the symbol under cursor |
+
+**Debugger** (same nvim-dap keymaps, uses codelldb)
+
+| Key | Action |
+| --- | --- |
+| `<F5>` | Continue / Start |
+| `<F10>` | Step over |
+| `<F11>` | Step into |
+| `<F12>` | Step out |
+| `<Leader>b` | Toggle breakpoint |
+| `<Leader>B` | Set conditional breakpoint |
+| `<Leader>dr` | Open REPL |
+
+---
+
 ## Unit test with [gotests](https://github.com/cweill/gotests) and testify
 
 > Ref [go.nvim](https://github.com/ray-x/go.nvim)

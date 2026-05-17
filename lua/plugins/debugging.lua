@@ -46,7 +46,7 @@ return {
         dependencies = { "williamboman/mason.nvim", "mfussenegger/nvim-dap" },
         config = function()
             require("mason-nvim-dap").setup({
-                ensure_installed = { "delve", "debugpy" },
+                ensure_installed = { "delve", "debugpy", "codelldb" },
                 automatic_installation = true,
             })
         end,

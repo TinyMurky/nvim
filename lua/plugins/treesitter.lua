@@ -7,7 +7,7 @@ return {
 		local treesitter_config = require("nvim-treesitter.configs")
 		treesitter_config.setup({
 			-- auto_install = true, -- install when meet new language
-			ensure_installed = {"lua", "javascript", "yaml", "typescript", "tsx", "python", "dart", "go"},
+			ensure_installed = {"lua", "javascript", "yaml", "typescript", "tsx", "python", "dart", "go", "rust"},
 			highlight = { enable = true },
 			indent = { enable = true },
 		})
