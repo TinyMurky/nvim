@@ -28,8 +28,6 @@ return {
                 -- Ref: https://github.com/ray-x/go.nvim?tab=readme-ov-file#integrate-null-ls
                 null_ls.builtins.diagnostics.revive,
 
-                -- Rust
-                null_ls.builtins.formatting.rustfmt,
             },
         })
 

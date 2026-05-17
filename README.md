@@ -242,7 +242,7 @@ This installs `rustaceanvim`. Mason will also auto-install `codelldb` (the Rust 
 | --- | --- |
 | LSP | `rust-analyzer` managed by rustaceanvim |
 | Linter | `clippy` runs on every save (via `check.command`) |
-| Formatter | `rustfmt` via none-ls, auto-runs on save |
+| Formatter | `rustfmt` via rust-analyzer, auto-runs on save |
 | Debugger | `codelldb` via Mason + nvim-dap |
 | Cargo features | All features enabled by default (`allFeatures = true`) |
 
