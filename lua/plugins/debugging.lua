@@ -15,6 +15,19 @@ return {
 
             dapui.setup() -- must call setup() to initialize the UI
 
+            -- VSCode-style breakpoint signs (red dot instead of the dim "B" text)
+            vim.api.nvim_set_hl(0, 'DapBreakpoint', { fg = '#e51400' })
+            vim.api.nvim_set_hl(0, 'DapBreakpointCondition', { fg = '#e51400' })
+            vim.api.nvim_set_hl(0, 'DapLogPoint', { fg = '#61afef' })
+            vim.api.nvim_set_hl(0, 'DapStopped', { fg = '#98c379' })
+            vim.api.nvim_set_hl(0, 'DapBreakpointRejected', { fg = '#888888' })
+
+            vim.fn.sign_define('DapBreakpoint', { text = '●', texthl = 'DapBreakpoint', linehl = '', numhl = '' })
+            vim.fn.sign_define('DapBreakpointCondition', { text = '◆', texthl = 'DapBreakpointCondition', linehl = '', numhl = '' })
+            vim.fn.sign_define('DapLogPoint', { text = '◆', texthl = 'DapLogPoint', linehl = '', numhl = '' })
+            vim.fn.sign_define('DapStopped', { text = '▶', texthl = 'DapStopped', linehl = 'DapStoppedLine', numhl = '' })
+            vim.fn.sign_define('DapBreakpointRejected', { text = '✗', texthl = 'DapBreakpointRejected', linehl = '', numhl = '' })
+
             vim.keymap.set('n', '<F5>', function() dap.continue() end)
             vim.keymap.set('n', '<F10>', function() dap.step_over() end)
             vim.keymap.set('n', '<F11>', function() dap.step_into() end)
