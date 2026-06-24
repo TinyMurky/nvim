@@ -36,6 +36,7 @@ return {
 	-- the lsp config that neovim actually uses
 	{
 		"neovim/nvim-lspconfig",
+		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
 
@@ -57,8 +58,11 @@ return {
 			-- ts_ls only activates for package.json projects (won't conflict with deno)
 			vim.lsp.config("ts_ls", {
 				capabilities = capabilities,
-				root_dir = function(bufnr)
-					return vim.fs.root(bufnr, { "package.json" })
+				root_dir = function(bufnr, on_dir)
+					local root = vim.fs.root(bufnr, { "package.json" })
+					if root then
+						on_dir(root)
+					end
 				end,
 				single_file_support = false,
 			})
