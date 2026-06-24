@@ -96,11 +96,29 @@ return {
         },
         config = function()
             require("dap-vscode-js").setup({
+                debugger_path = vim.fn.stdpath("data") .. "/lazy/vscode-js-debug",
                 adapters = { "pwa-node", "pwa-chrome" },
             })
 
+            local dap = require("dap")
+
+            -- nvim-dap-vscode-js calls vsDebugServer.js without a port argument,
+            -- but the current vscode-js-debug requires a port. Override adapter directly.
+            dap.adapters["pwa-node"] = {
+                type = "server",
+                host = "localhost",
+                port = "${port}",
+                executable = {
+                    command = "node",
+                    args = {
+                        vim.fn.stdpath("data") .. "/lazy/vscode-js-debug/out/src/vsDebugServer.js",
+                        "${port}",
+                    },
+                },
+            }
+
             for _, language in ipairs({ "typescript", "javascript", "typescriptreact", "javascriptreact" }) do
-                require("dap").configurations[language] = {
+                dap.configurations[language] = {
                     {
                         -- Launch the current file with Node
                         type = "pwa-node",
