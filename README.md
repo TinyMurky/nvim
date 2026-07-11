@@ -259,8 +259,10 @@ This installs `rustaceanvim`. Mason will also auto-install `codelldb` (the Rust 
 
 **Rust-specific (rustaceanvim)**
 
-| Command | Action |
+| Key / Command | Action |
 | --- | --- |
+| `<leader>rt` | List and run testables (`:RustLsp testables`) — put cursor in/near a `#[test]` fn |
+| `<leader>rd` | List and debug testables via codelldb (`:RustLsp debuggables`) |
 | `:RustLsp runnables` | List and run all `cargo run` / `cargo test` targets |
 | `:RustLsp debuggables` | List and debug targets with codelldb |
 | `:RustLsp expandMacro` | Expand macro under cursor (recursive) |
@@ -270,6 +272,8 @@ This installs `rustaceanvim`. Mason will also auto-install `codelldb` (the Rust 
 | `:RustLsp renderDiagnostic` | Render diagnostic as rendered rustc output |
 | `:RustLsp flyCheck` | Manually trigger `cargo check` / `clippy` |
 | `:RustLsp openDocs` | Open docs.rs for the symbol under cursor |
+
+> `<leader>rt` / `<leader>rd` are buffer-local, only mapped in `.rs` files.
 
 **Debugger** (same nvim-dap keymaps, uses codelldb)
 
