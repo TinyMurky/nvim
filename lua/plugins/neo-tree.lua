@@ -32,6 +32,25 @@ return {
           leave_dirs_open = false, -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
         },
       },
+      commands = {
+        copy_filename_to_clipboard = function(state)
+          local node = state.tree:get_node()
+          local filename = vim.fn.fnamemodify(node.path, ":t")
+          vim.fn.setreg("+", filename)
+          vim.notify("Copied filename: " .. filename)
+        end,
+        copy_path_to_clipboard = function(state)
+          local node = state.tree:get_node()
+          vim.fn.setreg("+", node.path)
+          vim.notify("Copied path: " .. node.path)
+        end,
+      },
+      window = {
+        mappings = {
+          ["Y"] = "copy_filename_to_clipboard",
+          ["gy"] = "copy_path_to_clipboard",
+        },
+      },
     })
   end,
 }
