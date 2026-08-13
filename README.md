@@ -165,6 +165,28 @@ Auto-restore on boot is enabled via `@continuum-restore 'on'` in `tmux.conf`.
 - `<leader><leader>k` : Swap buffer to the top split
 - `<leader><leader>l` : Swap buffer to the right split
 
+> Buffer 分頁列（barbar.nvim）
+
+畫面最上方那條分頁列，把開著的 buffer 用類似 VS Code 的樣式排在頂端，
+帶檔案圖示（nvim-web-devicons）和 git 狀態標記（gitsigns.nvim）。
+設定在 `lua/plugins/tab.lua`。
+
+| Key | Action |
+| --- | --- |
+| `<A-,>` | 上一個分頁 (`BufferPrevious`) |
+| `<A-.>` | 下一個分頁 (`BufferNext`) |
+| `<A-<>` | 把目前分頁往左移 (`BufferMovePrevious`) |
+| `<A->>` | 把目前分頁往右移 (`BufferMoveNext`) |
+| `<A-c>` | 關掉目前分頁 (`BufferClose`) |
+
+> ⚠️ `tab.lua` 裡釘了 `version = '^1.0.0'`，lazy 只會更新到 1.x。
+> 上游若把修正發在 2.x，不會自動拿到。
+>
+> 啟動時 `v:errmsg` 會留下 `E116: Invalid arguments for function dictwatcherdel`。
+> **這是正常的，不用修** —— barbar 首次啟動會「試著刪掉一個還不存在的 watcher」，
+> 原始碼裡用 `silent!` 包著表示預期會失敗（`autoload/barbar/events.vim`）。
+> 畫面上看不到，功能也完全正常。0.11 一樣會有，跟 Neovim 版本無關。
+
 ## Debugger (nvim-dap)
 
 Supports Go, Python, JavaScript, and TypeScript. The UI opens automatically when a debug session starts.
@@ -477,7 +499,8 @@ git submodule update --init --recursive
 Neovim 是用 AppImage 裝的，不是 apt / snap：
 
 ```
-~/.local/bin/nvim  ->  ~/nvim/nvim-linux-x86_64.appimage
+~/.local/bin/nvim  ->  ~/nvim/nvim-linux-x86_64.appimage      (目前 = 0.12.4)
+                       ~/nvim/nvim-linux-x86_64_11.appimage   (保留的 0.11.1，回退用)
 ```
 
 因為是 symlink，**升級與回退都只是換 symlink 指向**，這是最安全的形式。
@@ -526,15 +549,37 @@ Neovim 是用 AppImage 裝的，不是 apt / snap：
 symlink 指回去就好，一秒完成：
 
 ```bash
-ln -sf ~/nvim/nvim-0.11.1.appimage ~/.local/bin/nvim
+ln -sf ~/nvim/nvim-linux-x86_64_11.appimage ~/.local/bin/nvim
 ```
 
-⚠️ 如果已經照下面的流程把 `treesitter.lua` 改成 `main` 分支版本，回退時那個檔要一起還原
-（`main` 分支要求 Neovim 0.12+，在 0.11 上跑不動）：
+⚠️ **光是換回舊 appimage 不夠** —— 這份 config 目前有幾個檔案是 0.12 專屬的，
+在 0.11 上會直接讓 nvim 開不起來：
+
+| 檔案 | 0.11 沒有的東西 |
+| --- | --- |
+| `lua/ui-setting.lua` | `'pumborder'` 選項 → `E5113: Unknown option 'pumborder'` |
+| `lua/completion.lua` | `'autocomplete'` 選項、`wildtrigger()` |
+| `lua/plugins/treesitter.lua` | nvim-treesitter `main` 分支要求 0.12+ |
+
+所以回退要連同這些檔案一起還原：
 
 ```bash
-cd ~/.config/nvim && git checkout <升級前的 commit> -- lua/plugins/treesitter.lua
+cd ~/.config/nvim
+git checkout bd9ff00 -- \
+    lua/plugins/treesitter.lua \
+    lua/ui-setting.lua \
+    lua/plugins/completions.lua \
+    lua/utils/lsp_capabilities.lua \
+    lua/plugins/lsp-config.lua \
+    init.lua
+rm -f lua/completion.lua
 ```
+
+`bd9ff00`（修好 markdown preview）是升級前的最後一個 commit。升級相關的兩個是
+`39d7b60`（升級到 Neovim 0.12）和 `ea1a408`（改用原生補全）。
+
+還原之後 treesitter 的 parser 也要重裝（`main` 和 `master` 的安裝目錄不同）：
+在 0.11 裡跑 `:Lazy sync` 然後 `:TSUpdate`。
 
 ### 0.11 → 0.12 完整升級流程
 
