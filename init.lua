@@ -48,6 +48,9 @@ require("vim-options")
 -- ui settubg
 require("ui-setting")
 
+-- 原生補全（取代 nvim-cmp），Neovim 0.12+
+require("completion")
+
 -- Load Lazy
 -- package in plugins will be download, but neet to use require mannually
 require("lazy").setup("plugins") -- plugins.lua

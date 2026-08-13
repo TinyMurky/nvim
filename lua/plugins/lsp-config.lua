@@ -38,7 +38,8 @@ return {
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
-			"hrsh7th/cmp-nvim-lsp",
+			-- cmp-nvim-lsp 已移除：改用 Neovim 0.12 原生補全，
+			-- capabilities 由 utils/lsp_capabilities.lua 提供
 
 			-- support for dart hot reload on save
 			"RobertBrunhage/dart-tools.nvim",

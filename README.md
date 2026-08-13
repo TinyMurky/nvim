@@ -735,3 +735,90 @@ ls ~/.local/share/nvim/site/parser/                    # 應該看到 go.so / ru
 rm -rf ~/.local/share/nvim/lazy/nvim-treesitter/parser \
        ~/.local/share/nvim/lazy/nvim-treesitter/parser-info
 ```
+
+---
+
+## 補全（Neovim 0.12 原生，取代 nvim-cmp）
+
+設定在 `lua/completion.lua`（由 `init.lua` require），視窗外觀在 `lua/ui-setting.lua`。
+
+舊的 nvim-cmp 設定**沒有刪掉**，留在 `lua/plugins/completions.lua` 裡用
+`enabled = false` 關著，方便隨時退回。
+
+### cmp → 原生 對照表
+
+| 原本 nvim-cmp | 現在 |
+| --- | --- |
+| `cmp.config.window.bordered()` | `'pumborder'` 選項 |
+| `sources = { nvim_lsp }` | `'complete'` 的 `o` 旗標（omnifunc = LSP） |
+| `sources = { buffer }` | `'complete'` 的 `.` `w` `b` 旗標 |
+| 自動跳出選單 | `'autocomplete'` 選項 |
+| `cmp.setup.cmdline({'/', '?'})` | `wildtrigger()` + `wildoptions=pum` |
+| `cmp_nvim_lsp.default_capabilities()` | `vim.lsp.protocol.make_client_capabilities()` |
+
+`'complete'` 設成 `.,w,b,o`：目前 buffer → 其他視窗 → 其他已載入 buffer → LSP。
+順序有意義，越前面的來源分到越多運算時間。
+
+### Keymaps
+
+| 按鍵 | 行為 |
+| --- | --- |
+| `<C-j>` / `<C-k>` | 上下選（跟 smart-splits 的視窗跳躍同一組手指） |
+| `<Down>` / `<Up>` | 上下選（**原生就支援，不用設定**） |
+| `<C-n>` / `<C-p>` | 上下選（Vim 內建，會邊移邊把候選字塞進 buffer） |
+| `<Tab>` | 選單開著→確認；snippet 展開中→跳下一格；否則→普通 Tab |
+| `<S-Tab>` | 上一項 / snippet 往回跳 |
+| `<C-Space>` | 手動觸發 LSP 補全 |
+| `<C-e>` | 取消（原生預設） |
+| `<C-y>` | 確認（原生預設，`<Tab>` 是它的別名） |
+
+> `<C-j>` / `<C-k>` **只在選單開著時**才攔截；沒開選單就原樣放行，
+> 所以 `i_CTRL-J`（換行）和 `i_CTRL-K`（輸入 digraph，例如 `<C-k>a:` 打出 `ä`）
+> 的預設行為都保留。跟 smart-splits 的 `<C-j>` / `<C-k>` 也不衝突 —— 那組是 normal mode。
+>
+> `<C-n>` / `<C-p>` 沒有拿掉：它們不是設定裡綁的快捷鍵，而是 **Vim 內建的補全機制本身**
+> （`i_CTRL-N` = keyword completion）。留著成本是零，還多一層後路。
+>
+> 三組的差別：`<C-j>` / `<C-k>` 與方向鍵**只移動選取**，`<C-n>` 會邊移邊把候選字寫進 buffer。
+> 因為 `completeopt` 有 `noselect`（不預選），看清楚再按 `<Tab>` 確認會比較順。
+
+### 換過來之後少了什麼
+
+- **friendly-snippets** — 那是 vscode 格式的獨立 snippet 集，原生補全沒有對應來源。
+  **LSP server 自己提供的 snippet 仍然正常展開**（走 `vim.snippet`），
+  所以 Go / Rust / TS 的補全體驗不受影響，少的是手打縮寫展開模板那種。
+- **`<C-b>` / `<C-f>` 捲動說明浮窗** — 文件仍會顯示（`completeopt` 有 `popup`），只是不能捲。
+
+### 說明浮窗的邊框（workaround）
+
+`completeopt=popup` 的說明浮窗，其 border 在 Neovim 內部**被寫死成 `"none"`**，
+`'pumborder'` 只作用在選單本身，`'winborder'` 也管不到它。
+
+`lua/completion.lua` 裡用一個 `CompleteChanged` autocmd 在事後補上 `rounded`。
+判斷條件刻意挑得很嚴（非目前視窗 + 浮動 + 不可聚焦 + border 是 none +
+無名的 `nofile` buffer），實測過只會命中說明浮窗，不會動到 ui2 的訊息視窗。
+
+如果哪天上游自己加了對應選項、或行為改變，這段 autocmd 頂多是找不到目標而沒作用，
+不會出錯。不想要邊框就把那個 autocmd 註解掉。
+
+### 回退成 nvim-cmp
+
+1. `lua/plugins/completions.lua` 開頭的 `ENABLED` 改成 `true`
+2. `init.lua` 註解掉 `require("completion")`
+3. `lua/utils/lsp_capabilities.lua` 改回 `require('cmp_nvim_lsp').default_capabilities(...)`
+4. `lua/plugins/lsp-config.lua` 的 `dependencies` 加回 `"hrsh7th/cmp-nvim-lsp"`
+5. `:Lazy sync`
+
+### ui2（訊息與 cmdline UI 重新設計）
+
+在 `lua/ui-setting.lua` 啟用：
+
+```lua
+pcall(function() require("vim._core.ui2").enable() end)
+```
+
+最大好處是**不會再被 `Press ENTER or type command to continue` 打斷**，
+訊息改用浮動視窗顯示，cmdline 也會即時上色。
+
+還是實驗性的，所以模組路徑帶底線（`vim._core`），未來可能改名 ——
+用 `pcall` 包起來，哪天上游搬走也只是靜靜地退回舊 UI，不會讓整個 config 開不起來。
