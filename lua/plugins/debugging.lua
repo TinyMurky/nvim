@@ -91,7 +91,16 @@ return {
         dependencies = {
             {
                 "microsoft/vscode-js-debug",
-                build = "npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out",
+                -- --ignore-scripts 是必要的：上游 postinstall 會跑
+                -- `playwright install chromium --with-deps`，那需要 sudo，
+                -- 在 lazy 的無 terminal 環境下會失敗導致整個 build 中斷。
+                -- 那個 chromium 只給 js-debug 自己的測試用，debug server 不需要。
+                -- 最後 git checkout 還原被 npm 改掉的 package-lock.json，
+                -- 否則下次 Lazy update 會因為 "local changes" 拒絕更新。
+                build = "npm install --legacy-peer-deps --ignore-scripts"
+                    .. " && npx gulp vsDebugServerBundle"
+                    .. " && rm -rf out && mv dist out"
+                    .. " && git checkout -- package-lock.json",
             },
         },
         config = function()

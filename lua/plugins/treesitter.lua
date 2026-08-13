@@ -7,7 +7,8 @@ return {
 		local treesitter_config = require("nvim-treesitter.configs")
 		treesitter_config.setup({
 			-- auto_install = true, -- install when meet new language
-			ensure_installed = {"lua", "javascript", "yaml", "typescript", "tsx", "python", "dart", "go", "rust"},
+			-- markdown + markdown_inline 是 render-markdown.nvim 的必要條件
+			ensure_installed = {"lua", "javascript", "yaml", "typescript", "tsx", "python", "dart", "go", "rust", "markdown", "markdown_inline"},
 			highlight = { enable = true },
 			indent = { enable = true },
 		})

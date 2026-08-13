@@ -339,3 +339,116 @@ You can add available arguments with long name or character flag e.g.
 `GoTest -tags=integration ./internal/web -b=. -count=1 -`
 
 You can also add other unmapped arguments after the `-a` or `-args` flag `GoTest -a mock=true`
+
+---
+
+## Markdown (render-markdown.nvim + markdown-preview.nvim)
+
+設定檔在 `lua/plugins/markdown.lua`。兩個外掛互補：
+
+- **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)** — 直接在 buffer 裡渲染（heading 上色、code block 背景、表格對齊、checkbox icon）。進入 insert / visual 模式會自動變回原始文字，方便編輯。
+- **[markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)** — 開瀏覽器看完整 render（圖片、mermaid、同步捲動）。
+
+### Pre-install
+
+- 需要 `node` / `npm`（markdown-preview 第一次載入時會用 `mkdp#util#install()` 自動裝前端）
+- treesitter 的 `markdown` 與 `markdown_inline` parser（已加進 `treesitter.lua` 的 `ensure_installed`，必要時手動跑 `:TSUpdate`）
+
+### Keymaps
+
+只在 markdown 檔案生效：
+
+| Key | Action |
+| --- | --- |
+| `<leader>mr` | 切換 buffer 內渲染 (`:RenderMarkdown toggle`) |
+| `<leader>mp` | 切換瀏覽器預覽 (`:MarkdownPreviewToggle`) |
+
+### Commands
+
+| Command | Description |
+| ------- | ----------- |
+| `:RenderMarkdown` | 開啟 buffer 內渲染 |
+| `:RenderMarkdown disable` | 關閉渲染，顯示原始文字 |
+| `:RenderMarkdown toggle` | 切換 |
+| `:RenderMarkdown expand` / `contract` | 增減渲染的視窗寬度 |
+| `:MarkdownPreview` | 開瀏覽器預覽 |
+| `:MarkdownPreviewStop` | 關閉預覽 |
+| `:MarkdownPreviewToggle` | 切換 |
+| `:call mkdp#util#install()` | 手動重裝預覽的前端依賴（預覽開不起來時用） |
+
+### WSL 注意事項
+
+`markdown-preview` 預設會在 WSL 裡找不到瀏覽器。`markdown.lua` 內已設定 `g:mkdp_browserfunc`，
+改用 `/mnt/c/Windows/explorer.exe` 叫起 **Windows 的預設瀏覽器**：
+
+```lua
+function! MkdpOpenInWindows(url)
+	silent execute '!/mnt/c/Windows/explorer.exe ' . a:url
+endfunction
+```
+
+如果瀏覽器有開但頁面空白，通常是 WSL2 的 localhost forwarding 沒生效，
+可以改用 WSL 的 IP：在 `init` 裡加 `vim.g.mkdp_open_to_the_world = 1` 與 `vim.g.mkdp_ip = "0.0.0.0"`，
+然後在 Windows 用 `hostname -I` 拿到的 IP 連。
+
+---
+
+## Lazy 疑難排解
+
+> `:Lazy sync` 會**更新所有外掛**。只想裝新加的外掛時用 `:Lazy install`，比較不會翻出既有外掛的更新問題。
+
+### `vscode-js-debug`：build 失敗、JS debugger 起不來
+
+症狀（`:Lazy` 裡看到）：
+
+```
+sudo: a terminal is required to read the password
+Failed to install browsers
+npm error command sh -c playwright install chromium --with-deps --only-shell
+```
+
+原因：上游的 `postinstall` 會跑 `playwright install chromium --with-deps`，`--with-deps` 需要 sudo，
+lazy 沒有 terminal 可以輸密碼 → build 中斷 → `out/` 沒產生 → `pwa-node` adapter 找不到
+`out/src/vsDebugServer.js`。那個 chromium 只給 js-debug 自己的測試用，debug server 不需要。
+
+`lua/plugins/debugging.lua` 的 build 已加上 `--ignore-scripts` 避開。若還是壞掉，手動重建：
+
+```bash
+cd ~/.local/share/nvim/lazy/vscode-js-debug
+git checkout -- package-lock.json
+npm install --legacy-peer-deps --ignore-scripts
+npx gulp vsDebugServerBundle
+rm -rf out && mv dist out
+git checkout -- package-lock.json   # npm 又會改掉它
+```
+
+驗證：
+
+```bash
+ls ~/.local/share/nvim/lazy/vscode-js-debug/out/src/vsDebugServer.js
+```
+
+### `vscode-js-debug`：`You have local changes in ... package-lock.json`
+
+`npm install` 會改動 `package-lock.json`，lazy 就拒絕更新。還原即可：
+
+```bash
+git -C ~/.local/share/nvim/lazy/vscode-js-debug checkout -- package-lock.json
+```
+
+### `LuaSnip`：`Submodule 'deps/jsregexp' could not be updated`
+
+```
+error: Entry 'deps/jsregexp/.github/workflows/test.yml' not uptodate. Cannot merge.
+```
+
+submodule 裡有髒檔案（通常是 build 產物）。清乾淨再同步：
+
+```bash
+cd ~/.local/share/nvim/lazy/LuaSnip
+git submodule foreach --recursive 'git checkout -- . && git clean -fd'
+git submodule update --init --recursive
+```
+
+檢查是否乾淨：`git -C ~/.local/share/nvim/lazy/LuaSnip submodule status`
+（行首沒有 `+` / `-` 就表示正常）
