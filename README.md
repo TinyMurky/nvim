@@ -374,7 +374,22 @@ You can also add other unmapped arguments after the `-a` or `-args` flag `GoTest
 | `:MarkdownPreview` | 開瀏覽器預覽 |
 | `:MarkdownPreviewStop` | 關閉預覽 |
 | `:MarkdownPreviewToggle` | 切換 |
-| `:call mkdp#util#install()` | 手動重裝預覽的前端依賴（預覽開不起來時用） |
+| `:call mkdp#util#install()` | 手動下載預覽用的 binary（預覽開不起來時用） |
+
+### 預覽是空白的 / 瀏覽器開了但沒內容
+
+多半是 binary 沒裝成功（lazy 的 build 靜靜失敗了）。先檢查：
+
+```bash
+ls ~/.local/share/nvim/lazy/markdown-preview.nvim/app/bin/
+```
+
+要看到 `markdown-preview-linux`。沒有的話直接跑安裝腳本（比 `:call mkdp#util#install()` 可靠，
+會顯示下載進度）：
+
+```bash
+cd ~/.local/share/nvim/lazy/markdown-preview.nvim && bash app/install.sh
+```
 
 ### WSL 注意事項
 

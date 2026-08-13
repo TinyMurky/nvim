@@ -41,10 +41,15 @@ return {
 			vim.fn["mkdp#util#install"]()
 		end,
 		init = function()
-			-- WSL：用 explorer.exe 叫起 Windows 的預設瀏覽器
+			-- WSL：用 explorer.exe 叫起 Windows 的預設瀏覽器。
+			-- 用 jobstart 而不是 `!`：`!` 會卡住 nvim 畫面，而且 explorer.exe
+			-- 不管成功與否都回傳 exit code 1，用 `!` 會被 nvim 誤報成錯誤。
+			_G.MkdpOpenInWindows = function(url)
+				vim.fn.jobstart({ "/mnt/c/Windows/explorer.exe", url }, { detach = true })
+			end
 			vim.cmd([[
 				function! MkdpOpenInWindows(url)
-					silent execute '!/mnt/c/Windows/explorer.exe ' . a:url
+					call v:lua.MkdpOpenInWindows(a:url)
 				endfunction
 			]])
 			vim.g.mkdp_browserfunc = "MkdpOpenInWindows"
