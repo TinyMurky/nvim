@@ -467,3 +467,271 @@ git submodule update --init --recursive
 
 檢查是否乾淨：`git -C ~/.local/share/nvim/lazy/LuaSnip submodule status`
 （行首沒有 `+` / `-` 就表示正常）
+
+---
+
+## 升級 Neovim（AppImage）
+
+### 現況
+
+Neovim 是用 AppImage 裝的，不是 apt / snap：
+
+```
+~/.local/bin/nvim  ->  ~/nvim/nvim-linux-x86_64.appimage
+```
+
+因為是 symlink，**升級與回退都只是換 symlink 指向**，這是最安全的形式。
+前提是：**舊的 appimage 不要刪掉**。
+
+### 升級步驟
+
+1. 先記下現在的版本，並把舊檔改成帶版號的名字（方便日後回退）：
+
+    ```bash
+    nvim --version | head -1          # 例如 NVIM v0.11.1
+    mv ~/nvim/nvim-linux-x86_64.appimage ~/nvim/nvim-0.11.1.appimage
+    ln -sf ~/nvim/nvim-0.11.1.appimage ~/.local/bin/nvim   # symlink 先指回舊版
+    ```
+
+2. 下載新版（`stable` 會拿到最新穩定版；要釘版本就把 `stable` 換成 `v0.12.4`）：
+
+    ```bash
+    cd ~/nvim
+    curl -LO https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.appimage
+    chmod +x nvim-linux-x86_64.appimage
+    ./nvim-linux-x86_64.appimage --version | head -1      # 確認版本
+    mv nvim-linux-x86_64.appimage nvim-0.12.4.appimage    # 改成實際版號
+    ```
+
+3. 切換過去：
+
+    ```bash
+    ln -sf ~/nvim/nvim-0.12.4.appimage ~/.local/bin/nvim
+    nvim --version | head -1
+    ```
+
+4. 升級後第一次開 nvim 要做的事：
+
+    ```vim
+    :Lazy sync
+    :TSUpdate          " treesitter parser 綁 ABI 版本，跨大版本要重編
+    :checkhealth
+    ```
+
+    > **跨大版本（例如 0.11 → 0.12）光做這步不夠**，treesitter 需要換分支，
+    > 見下面的〈0.11 → 0.12 完整升級流程〉。
+
+### 回退
+
+symlink 指回去就好，一秒完成：
+
+```bash
+ln -sf ~/nvim/nvim-0.11.1.appimage ~/.local/bin/nvim
+```
+
+⚠️ 如果已經照下面的流程把 `treesitter.lua` 改成 `main` 分支版本，回退時那個檔要一起還原
+（`main` 分支要求 Neovim 0.12+，在 0.11 上跑不動）：
+
+```bash
+cd ~/.config/nvim && git checkout <升級前的 commit> -- lua/plugins/treesitter.lua
+```
+
+### 0.11 → 0.12 完整升級流程
+
+> 這是 2026-08-13 實際做過一次的紀錄，照著跑即可。
+
+**Step 1 — 先在 0.11 上修掉 deprecation**（改完 0.11 / 0.12 都相容，零風險）
+
+- `lua/utils/error_jump.lua`：`vim.diagnostic.goto_next/goto_prev` → `vim.diagnostic.jump()`
+  - `jump()` 會回傳「有沒有找到」，不用再比對游標位置
+  - 要明確帶 `float = true`，`goto_next` 預設會彈浮窗但 `jump()` 預設不會
+- `init.lua`：`vim.diagnostic.config` 的 `float.source` 從 `"always"` 改成 `true`
+
+**Step 2 — 換 appimage**（見上面的〈升級步驟〉）
+
+**Step 3 — 裝 `tree-sitter` CLI**
+
+0.12 一定要換到 nvim-treesitter 的 `main` 分支，而 `main` 用 `tree-sitter` CLI 來 build
+parser。Ubuntu 22.04 不能用預編譯 binary（glibc 太舊），要自己編：
+
+```bash
+sudo apt install -y libclang-dev
+cargo install tree-sitter-cli --locked
+tree-sitter --version                   # 要 >= 0.26.1
+```
+
+細節與各種錯誤訊息見〈nvim-treesitter（`main` 分支）〉那一節。
+
+**Step 4 — 換 nvim-treesitter 分支並清掉舊 parser**
+
+`lua/plugins/treesitter.lua` 改成 `branch = "main"` 版本，然後清掉 master 留下的
+舊 parser（ABI 不合，留著會繼續作亂）：
+
+```bash
+rm -rf ~/.local/share/nvim/lazy/nvim-treesitter/parser \
+       ~/.local/share/nvim/lazy/nvim-treesitter/parser-info
+```
+
+**Step 5 — 重裝 plugin 與 parser**
+
+```vim
+:Lazy sync
+:TSUpdate
+```
+
+**Step 6 — 驗證**
+
+```vim
+:checkhealth
+```
+
+開幾個不同語言的檔案，確認有語法上色。快速檢查已安裝的 parser：
+
+```bash
+ls ~/.local/share/nvim/site/parser/
+```
+
+應該看到 `go.so dart.so javascript.so lua.so markdown.so markdown_inline.so
+python.so rust.so tsx.so typescript.so yaml.so`（注意路徑是 `site/`，
+不再是外掛資料夾裡）。
+
+**Step 7 — 觀察幾天**
+
+`vim.NIL` 那類 LSP 改動只有實際用才會踩到，舊 appimage 先別刪。
+
+### 0.12 升級注意事項
+
+這個 config 已經處理好的部分：
+
+- LSP 已經用原生的 `vim.lsp.config()` / `vim.lsp.enable()`（不是舊的
+  `require('lspconfig').xxx.setup{}`），這是 0.11→0.12 最大的一筆遷移
+- mason-lspconfig 已經是 v2（`automatic_enable`）
+- `vim.diagnostic.goto_next/goto_prev` 已改成 `vim.diagnostic.jump()`
+- `vim.diagnostic.config` 的 `float.source` 已從 `"always"` 改成 `true`
+
+**看起來危險但沒事**：`debugging.lua` 裡的 `vim.fn.sign_define('DapBreakpoint', ...)`。
+0.12 的 breaking change 只針對 **diagnostic** signs（`DiagnosticSignError` 那一組），
+nvim-dap 自己的 sign group 不受影響。
+
+**0.12 反而修掉的**：go.nvim 的 `vim.lsp.condelens` typo（`lua/go/lsp.lua:47`）。
+0.11 沒有 `vim.lsp.codelens.enable`，所以會走進那個壞掉的 else 分支噴
+`ON_ATTACH_ERROR`；0.12 有了 `.enable`，會走正常分支，問題自動消失。
+
+**真正的風險在 plugin 端，靜態掃不出來**，只能升上去實際跑：
+
+- LSP 的 JSON `null` 從 `nil` 改成 `vim.NIL` ← 最容易讓 plugin 出錯
+- `client.attached_buffers[buf]` 從 boolean 變成 languageId 字串
+- `vim.lsp.semantic_tokens.start/stop` 改名成 `enable()`
+
+會受影響的是那些自己處理 LSP 回應的外掛：**go.nvim / rustaceanvim /
+flutter-tools / none-ls**。出事就用上面的回退指令切回舊版。
+
+**nvim-treesitter 必須換到 `main` 分支** — 見下一節。
+
+---
+
+## nvim-treesitter（`main` 分支）
+
+### 為什麼不能用 master
+
+升上 0.12 之後，開 markdown 會噴：
+
+```
+vim/treesitter.lua:197: attempt to call method 'range' (a nil value)
+  ... nvim-treesitter/lua/nvim-treesitter/query_predicates.lua:141: in function 'handler'
+```
+
+0.12 移除了 `Query:iter_matches()` 的 `all` 選項，`match[capture_id]` 現在一律是
+`TSNode[]` 陣列而不是單一 node。master 的 `query_predicates.lua` 還當成單一 node
+在用，所以拿到 table 再呼叫 `:range()` 就爆了。
+
+**這不會被修**。master 的最後一個 commit 就是把 README 改成：
+
+```diff
+- **Neovim 0.10** or later (supported up to Neovim 0.12);
++ **Neovim 0.10 or 0.11** (Neovim 0.12 is **not supported**);
+```
+
+### 為什麼不能直接拔掉改用 core 原生
+
+Neovim 0.12 的 core 只涵蓋一部分：
+
+| 功能 | core 0.12 |
+| --- | --- |
+| Highlight (`vim.treesitter.start`) | ✅ 原生 |
+| Fold (`vim.treesitter.foldexpr`) | ✅ 原生 |
+| 內建 parser | ⚠️ 只有 `c lua markdown markdown_inline query vim vimdoc` |
+| go / rust / python / typescript / tsx / javascript / yaml / dart | ❌ 沒有 |
+| parser 安裝器（`:TSInstall` / `:TSUpdate`） | ❌ 沒有 |
+| Indent（`vim.treesitter.indentexpr`） | ❌ 沒有（是 nil） |
+
+所以 parser 管理跟 indent 還是得靠 nvim-treesitter。
+
+### Pre-install：`tree-sitter` CLI（**必要**）
+
+`main` 分支跟 master 不同，它用 **`tree-sitter` CLI** 來 build parser，不是直接用 `cc`。
+沒有這個 CLI 的話所有 parser 都會失敗（而且訊息會騙你說 `Installed 13/13 languages`，
+其實只裝到 `jsx` / `ecma` 這兩個不用編譯的別名）。
+
+上游要求 **0.26.1 以上，用套件管理器裝，不要用 npm**。
+
+⚠️ **Ubuntu 22.04（glibc 2.35）不能用預編譯 binary**。Mason 的 `tree-sitter-cli`
+和 npm 套件裝的都是同一批預編譯檔，需要 GLIBC 2.39，會噴：
+
+```
+tree-sitter: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.39' not found
+```
+
+**用 cargo 從原始碼編**（對著本機 glibc 編，這是這台機器唯一可行的方式）：
+
+```bash
+sudo apt install -y libclang-dev        # 先裝這個，否則下一步會失敗
+cargo install tree-sitter-cli --locked
+tree-sitter --version                   # 要 >= 0.26.1
+```
+
+`libclang-dev` 是必要的 —— tree-sitter 0.26 的相依會用 bindgen，少了它會噴：
+
+```
+Unable to find libclang: couldn't find any valid shared libraries matching:
+['libclang.so', 'libclang-*.so', ...]
+```
+
+> 如果之前用 Mason 裝過，記得先移掉（`:Mason` 找到 tree-sitter-cli 按 `X`）。
+> Mason 的 bin 目錄在 nvim 的 PATH 裡優先權比 `~/.cargo/bin` 高，
+> 壞掉的那個會蓋掉 cargo 編出來的。
+
+### 設定上的差異
+
+`main` 沒有 `require('nvim-treesitter.configs').setup()`。`lua/plugins/treesitter.lua`
+改成自己掛 FileType autocmd：
+
+- highlight → `vim.treesitter.start()`
+- indent → `vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"`
+- parser 安裝目錄從外掛資料夾改到 `stdpath('data')/site`
+
+要加語言就改檔案裡的 `ensure_installed`，或直接 `:TSInstall <lang>`。
+
+### 常用指令
+
+| Command | Description |
+| ------- | ----------- |
+| `:TSInstall <lang>` | 安裝某個語言的 parser |
+| `:TSUpdate` | 更新所有已安裝的 parser |
+| `:checkhealth vim.treesitter` | 檢查 parser 狀態 |
+
+### 疑難排解
+
+`:TSUpdate` 全部失敗、或開檔案沒有語法上色：
+
+```bash
+tree-sitter --version                                  # 沒有這個指令 → 見上面 Pre-install
+ls ~/.local/share/nvim/site/parser/                    # 應該看到 go.so / rust.so ...
+```
+
+從 master 換過來時，舊 parser 留在外掛資料夾裡會因為 ABI 不合而繼續作亂，要清掉：
+
+```bash
+rm -rf ~/.local/share/nvim/lazy/nvim-treesitter/parser \
+       ~/.local/share/nvim/lazy/nvim-treesitter/parser-info
+```
