@@ -32,7 +32,9 @@ vim.diagnostic.config({
   severity_sort = true,  -- ✅ 錯誤嚴重度排序（錯誤比警告高）
   float = {
     border = "rounded",  -- ✅ 漂亮圓角邊框的浮動小視窗
-    source = "always",   -- ✅ 浮窗裡會寫是哪個 LSP 報錯
+    -- ✅ 浮窗裡會寫是哪個 LSP 報錯
+    -- 舊寫法是 source = "always"，字串形式在 Nvim 0.10 起 deprecated，改用 boolean
+    source = true,
     header = "",         -- ✅ 浮窗不要標題，簡潔
     prefix = "",         -- ✅ 浮窗不要前綴符號
   },
@@ -45,6 +47,9 @@ require("vim-options")
 
 -- ui settubg
 require("ui-setting")
+
+-- 原生補全（取代 nvim-cmp），Neovim 0.12+
+require("completion")
 
 -- Load Lazy
 -- package in plugins will be download, but neet to use require mannually

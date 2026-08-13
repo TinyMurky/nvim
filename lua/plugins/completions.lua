@@ -1,12 +1,30 @@
 -- https://github.com/hrsh7th/nvim-cmp
+--
+-- ⚠️ 這整組已經停用，改用 Neovim 0.12 的原生補全（見 lua/completion.lua）。
+--
+-- 設定沒有刪掉，只是把 enabled 關成 false，方便隨時退回：
+--   1. 把下面的 ENABLED 改成 true
+--   2. 把 init.lua 裡的 require("completion") 註解掉
+--   3. 把 lua/utils/lsp_capabilities.lua 改回用 cmp_nvim_lsp
+--   4. 把 cmp-nvim-lsp 加回 lua/plugins/lsp-config.lua 的 dependencies
+--   5. :Lazy sync
+--
+-- 換過去之後少了什麼（原生補全沒有的）：
+--   - friendly-snippets：那是 vscode 格式的獨立 snippet 集，原生沒有對應來源。
+--     LSP server 自己提供的 snippet 仍然正常展開（vim.snippet）。
+--   - <C-b>/<C-f> 捲動文件浮窗。
+local ENABLED = false
+
 return {
     {
         -- https://github.com/hrsh7th/cmp-nvim-lsp
         -- get snippet from lsp server
         "https://github.com/hrsh7th/cmp-nvim-lsp",
+        enabled = ENABLED,
     },
 	{
 		"L3MON4D3/LuaSnip",
+		enabled = ENABLED,
 		dependencies = {
 			"saadparwaiz1/cmp_luasnip", -- put snippit into code
             "rafamadriz/friendly-snippets" -- This is the true snippet that actually used, like vs code
@@ -14,6 +32,7 @@ return {
 	},
 	{
 		"hrsh7th/nvim-cmp",
+		enabled = ENABLED,
 		config = function()
 			-- Set up nvim-cmp.
 			local cmp = require("cmp")
