@@ -3,7 +3,7 @@
 -- leader key set to space
 vim.g.mapleader = " "
 
-vim.keymap.set('i', 'kj', '<esc>', { desc = "Escape" })
+-- vim.keymap.set('i', 'kj', '<esc>', { desc = "Escape" })
 
 
 -- set clipboard with wl-clipboard install
@@ -44,20 +44,8 @@ vim.keymap.set('n', '<leader>H',
 -- line number in the left
 vim.wo.relativenumber = true
 
--- 和vim.diagnose一起用, 彈出錯誤訊息
+-- 顯示游標所在行的 LSP 診斷訊息。
+-- `scope = "line"` 比 `cursor` 寬鬆：游標不必剛好停在被標記的字元上。
 vim.keymap.set('n', '<leader>i', function()
-    -- If we find a floating window, close it.
-    local found_float = false
-    for _, win in ipairs(vim.api.nvim_list_wins()) do
-        if vim.api.nvim_win_get_config(win).relative ~= '' then
-            vim.api.nvim_win_close(win, true)
-            found_float = true
-        end
-    end
-
-    if found_float then
-        return
-    end
-
-    vim.diagnostic.open_float(nil, { focus = false, scope = 'cursor' })
-end, { desc = 'Toggle Diagnostics' })
+    vim.diagnostic.open_float(nil, { focus = false, scope = 'line' })
+end, { desc = 'Show line diagnostics' })
