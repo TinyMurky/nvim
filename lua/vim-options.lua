@@ -41,9 +41,9 @@ vim.keymap.set('n', '<leader>H',
     end
 )
 
--- 左側顯示絕對行號
+-- 游標所在行顯示絕對行號，其餘顯示相對行號
 vim.wo.number = true
-vim.wo.relativenumber = false
+vim.wo.relativenumber = true
 
 -- 顯示游標所在行的 LSP 診斷訊息。
 -- `scope = "line"` 比 `cursor` 寬鬆：游標不必剛好停在被標記的字元上。
