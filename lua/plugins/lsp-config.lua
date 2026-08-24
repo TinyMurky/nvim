@@ -24,6 +24,7 @@ return {
 					"gopls", -- go
 					"dockerls", -- dockerfile-language-server
 					"docker_compose_language_service", --  docker-compose-language-service
+					"texlab", -- LaTeX
 				},
 				-- pylsp is excluded because it's managed by a FileType autocommand
 				-- that dynamically picks .venv/bin/pylsp over Mason's pylsp
@@ -126,6 +127,10 @@ return {
 				capabilities = capabilities,
 			})
 
+			vim.lsp.config("texlab", {
+				capabilities = capabilities,
+			})
+
 			vim.lsp.enable({
 				"lua_ls",
 				"ts_ls",
@@ -135,6 +140,7 @@ return {
 				"gopls",
 				"dockerls",
 				"docker_compose_language_service",
+				"texlab",
 			})
 
 			vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
