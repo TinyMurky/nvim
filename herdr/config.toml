@@ -15,6 +15,16 @@ focus_pane_down = ""
 focus_pane_up = ""
 focus_pane_right = ""
 
+# 快速切換 workspace
+previous_workspace = "prefix+left"
+next_workspace = "prefix+right"
+switch_workspace = "prefix+shift+1..9"
+
+# 依照 sidebar 顯示順序切換或直接選取 AI agent
+previous_agent = "prefix+up"
+next_agent = "prefix+down"
+focus_agent = "prefix+alt+1..9"
+
 [[keys.command]]
 key = "ctrl+h"
 type = "plugin_action"

@@ -140,6 +140,13 @@ Prefix 是 `Ctrl-a`。`Prefix+h` 的意思是先按下 `Ctrl-a`、放開，再�
 | `Prefix+w` | 開啟 workspace picker |
 | `Prefix+g` | 開啟 session navigator |
 | `Prefix+b` | 展開／收起 sidebar |
+| `Prefix+Left` / `Prefix+Right` | 上一個／下一個 workspace |
+| `Prefix+Shift+1..9` | 跳到指定 workspace |
+| `Prefix+Up` / `Prefix+Down` | 切換到 sidebar 中上一個／下一個 AI agent |
+| `Prefix+Alt+1..9` | 跳到 sidebar 中指定的 AI agent |
+
+Workspace 與 agent 的數字索引都依照目前 UI 顯示順序排列。切換到其他 workspace
+內的 agent 時，Herdr 會同時聚焦對應的 workspace、tab 與 pane。
 
 CLI 操作需要先用 `list` 找到 ID：
 
