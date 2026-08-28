@@ -10,6 +10,7 @@
   "go.nvim": { "branch": "master", "commit": "0768d79bbebdb1a112a845f9cd6293bfbd544dab" },
   "guihua.lua": { "branch": "master", "commit": "4c513d5dac550af77034cced421967b393261509" },
   "hardtime.nvim": { "branch": "main", "commit": "244753782b945def87472d8f4e9e6a9d4ec18689" },
+  "herdr-splits.nvim": { "branch": "main", "commit": "94f30cf4e9ac76ddf185a3acd0977be728fa4106" },
   "lazy.nvim": { "branch": "main", "commit": "306a05526ada86a7b30af95c5cc81ffba93fef97" },
   "lazygit.nvim": { "branch": "main", "commit": "a04ad0dbc725134edbee3a5eea29290976695357" },
   "lualine.nvim": { "branch": "master", "commit": "221ce6b2d999187044529f49da6554a92f740a96" },

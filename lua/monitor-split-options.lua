@@ -6,6 +6,12 @@ vim.keymap.set("n", "<leader>sh", ":set nosplitright<CR>:vsplit<CR>", { noremap 
 vim.keymap.set("n", "<leader>sj", ":set splitbelow<CR>:split<CR>", { noremap = true, silent = true }) -- 開下
 vim.keymap.set("n", "<leader>sk", ":set nosplitbelow<CR>:split<CR>", { noremap = true, silent = true }) -- 開左
 
+-- Herdr 內的導覽與 resize 由 lua/plugins/herdr-splits.lua 設定。
+-- 非 Herdr 環境（包含舊 tmux）才載入 smart-splits mappings。
+if vim.env.HERDR_ENV == "1" then
+    return
+end
+
 -- 以下是smart split的設定
 -- recommended mappings
 -- resizing splits

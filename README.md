@@ -26,7 +26,274 @@ lint will not auto install
 
 Please use `:Mason` and visit lint to install linter like `revive`
 
-## Tmux Integration
+## Herdr Integration (Primary)
+
+[Herdr](https://herdr.dev/) 是目前 Alacritty 預設啟動的 terminal multiplexer。
+這份設定搭配 [herdr-splits.nvim](https://github.com/lmilojevicc/herdr-splits.nvim)，
+讓同一組按鍵可以在 Herdr panes 與 Neovim splits 之間移動。
+
+Herdr 的結構由大到小是：
+
+```text
+session
+└── workspace（通常對應一個 project）
+    └── tab
+        └── pane（真正執行 shell、Neovim 或 AI agent 的 terminal）
+```
+
+### Install and configure
+
+安裝 Herdr：
+
+```bash
+curl -fsSL https://herdr.dev/install.sh | sh
+herdr --version
+```
+
+安裝與更新方式以 [Herdr install documentation](https://herdr.dev/docs/install/) 為準。
+
+設定檔保存在此 repository，再 symlink 到 Herdr 預設位置：
+
+```bash
+mkdir -p ~/.config/herdr
+ln -s ~/.config/nvim/herdr/config.toml ~/.config/herdr/config.toml
+herdr config check
+```
+
+如果目的地已經存在，先確認它是否為正確的 symlink，不要直接覆蓋：
+
+```bash
+ls -l ~/.config/herdr/config.toml
+readlink -f ~/.config/herdr/config.toml
+```
+
+安裝 Herdr 端的 navigation actions：
+
+```bash
+herdr plugin install lmilojevicc/herdr-splits.nvim
+herdr plugin list
+```
+
+Herdr marketplace 是未經官方審核的社群索引；安裝前應先檢查 plugin repository、
+manifest 與執行腳本。這份設定使用的版本來源固定顯示在 `herdr plugin list`。
+
+Neovim 端由 `lua/plugins/herdr-splits.lua` 安裝。首次設定後，先在 Herdr pane 裡
+啟動 Neovim，再執行：
+
+```vim
+:Lazy install
+:checkhealth herdr-splits
+```
+
+`herdr-splits.nvim` 只在 `HERDR_ENV=1` 時載入；其他環境仍使用
+`smart-splits.nvim`，因此舊的 tmux 設定可以繼續作為 fallback。
+
+### Alacritty startup
+
+`~/.config/alacritty/alacritty.toml` 使用 Herdr 的絕對路徑：
+
+```toml
+[terminal.shell]
+program = "/home/tinymurky/.local/bin/herdr"
+```
+
+新開 Alacritty 時會啟動或重新 attach default session。關閉 Alacritty 視窗只會關閉
+client，背景 server 與 panes 仍會繼續運作。
+
+### Prefix and keybindings
+
+Prefix 是 `Ctrl-a`。`Prefix+h` 的意思是先按下 `Ctrl-a`、放開，再按 `h`，
+不是同時按住三個鍵。
+
+| Key | Action |
+| --- | --- |
+| `<C-h/j/k/l>` | 在 Neovim splits 與 Herdr panes 之間移動 |
+| `<A-h/j/k/l>` | 調整 Neovim split 或 Herdr pane 大小 |
+| `Prefix+h` | 在左邊建立 pane |
+| `Prefix+j` | 在下方建立 pane |
+| `Prefix+k` | 在上方建立 pane |
+| `Prefix+l` | 在右邊建立 pane |
+| `Prefix+x` | 關閉目前 pane |
+| `Prefix+z` | zoom／取消 zoom 目前 pane |
+| `Prefix+r` | 進入 resize mode |
+| `Prefix+Shift+h/j/k/l` | 交換 Herdr panes |
+| `Prefix+[` | 進入 copy mode |
+| `Prefix+?` | 顯示目前生效的完整快捷鍵 |
+| `Prefix+Shift+r` | 重新載入 `config.toml` |
+| `Prefix+q` | detach client；不會停止背景工作 |
+
+> `Ctrl-k` 與 `Ctrl-l` 被設成全域 pane navigation，因此一般 shell 原本的
+> kill-line 與 clear-screen 快捷鍵會被覆蓋。
+
+### Tabs and workspaces
+
+| Key | Action |
+| --- | --- |
+| `Prefix+c` | 新增 tab |
+| `Prefix+n` / `Prefix+p` | 下一個／上一個 tab |
+| `Prefix+1..9` | 跳到指定 tab |
+| `Prefix+Shift+t` | 重新命名 tab |
+| `Prefix+Shift+x` | 關閉目前 tab |
+| `Prefix+Shift+n` | 新增 workspace |
+| `Prefix+Shift+w` | 重新命名 workspace |
+| `Prefix+Shift+d` | 關閉 workspace |
+| `Prefix+w` | 開啟 workspace picker |
+| `Prefix+g` | 開啟 session navigator |
+| `Prefix+b` | 展開／收起 sidebar |
+
+CLI 操作需要先用 `list` 找到 ID：
+
+```bash
+# Workspace
+herdr workspace list
+herdr workspace create --cwd ~/Projects/my-project --label my-project --focus
+herdr workspace focus <workspace_id>
+herdr workspace rename <workspace_id> new-name
+herdr workspace close <workspace_id>
+
+# Tab
+herdr tab list
+herdr tab create --label editor --focus
+herdr tab focus <tab_id>
+herdr tab rename <tab_id> server
+herdr tab close <tab_id>
+
+# Pane
+herdr pane list
+herdr pane split --current --direction right --focus
+herdr pane split --current --direction down --focus
+herdr pane close <pane_id>
+```
+
+### Sessions: attach, switch, stop, and delete
+
+完整的保存與 named session 行為請參考
+[Persistence and remote access](https://herdr.dev/docs/persistence-remote/)。
+
+直接執行 `herdr` 使用 default session：
+
+```bash
+herdr
+```
+
+Named session 擁有獨立的 workspaces、tabs、panes 與背景 server：
+
+```bash
+# 建立或 attach named session
+herdr --session work
+# 等價寫法
+herdr session attach work
+
+# 列出所有 sessions
+herdr session list
+
+# 切換 session：先在目前 Herdr 按 Prefix+q detach，再執行
+herdr session attach side-project
+```
+
+停止與刪除 session：
+
+```bash
+# 停止 named session；會終止該 session 裡所有 pane processes
+herdr session stop work
+
+# 只能刪除已停止的 named session
+herdr session delete work
+
+# 停止 default session；同樣會終止所有 pane processes
+herdr server stop
+```
+
+`Prefix+q` 或關閉 Alacritty 只是 detach；`session stop`／`server stop` 才會真正
+停止背景 server 和 pane 裡的程式。不要在 agent、dev server 或未儲存的工作仍在執行時
+誤用 stop。
+
+### AI agent status and control
+
+支援的 agents、狀態來源與 integration 能力請參考
+[Agents](https://herdr.dev/docs/agents/) 與
+[Integrations](https://herdr.dev/docs/integrations/)。
+
+Herdr 會自動偵測常見 AI agents，sidebar 會將狀態彙整為 `working`、`idle`、
+`blocked`、`done` 或 `unknown`。安裝官方 integration 可以補上 session identity，
+讓支援的 agent 在 Herdr server 重啟後恢復原本 conversation。
+
+```bash
+# 安裝本機常用 agent integration
+herdr integration install codex
+herdr integration install claude
+
+# 檢查安裝版本與狀態
+herdr integration status
+
+# 移除 integration
+herdr integration uninstall codex
+```
+
+檢視及控制 agent；`<target>` 可以使用 `herdr agent list` 顯示的唯一名稱或 pane ID：
+
+```bash
+herdr agent list
+herdr agent get <target>
+herdr agent focus <target>
+herdr agent read <target> --source recent --lines 50
+
+# 傳送 prompt；等到 idle、done 或 blocked，最多等待 10 分鐘
+herdr agent prompt <target> "Please run the tests" --wait --timeout 600000
+
+# 單純等待目前工作完成或需要人工處理
+herdr agent wait <target> --timeout 600000
+
+# 狀態偵測不正確時查看判定依據
+herdr agent explain <target> --verbose
+
+# 自訂 sidebar 顯示名稱／清除名稱
+herdr agent rename <target> reviewer
+herdr agent rename reviewer --clear
+```
+
+通常不需要手動設定 `working` 或 `blocked`；應先安裝對應 integration，讓 Herdr
+根據 agent hooks 或畫面內容自動判定。自製 agent 才需要使用
+`herdr pane report-agent`／`herdr pane release-agent` 回報 lifecycle。
+
+### Maintenance and troubleshooting
+
+```bash
+# 修改設定後先驗證，再 reload running server
+herdr config check
+herdr server reload-config
+
+# 查看 server/client 與插件狀態
+herdr status server
+herdr status client
+herdr plugin list
+herdr plugin action list --plugin herdr-splits
+
+# 查看 agent、pane 與最近 terminal 內容
+herdr agent list
+herdr pane list
+herdr pane read <pane_id> --source recent --lines 50
+
+# 查看 logs
+tail -n 100 ~/.config/herdr/herdr-client.log
+tail -n 100 ~/.config/herdr/herdr-server.log
+```
+
+Herdr 自行安裝的 binary 可以用 `herdr update` 更新。`herdr-splits.nvim` 的 Neovim
+端由 lazy.nvim 更新，設定中的 `auto_sync_herdr = true` 會讓 Herdr 端 actions 與
+Neovim 端保持相同 commit。
+
+### Integration test
+
+1. 在 Herdr pane 內執行 `nvim`。
+2. 在 Neovim 執行 `:vsplit` 與 `:split`。
+3. 使用 `<C-h/j/k/l>` 在 Neovim splits 之間移動。
+4. 移動到 Neovim 邊界，確認可以進入相鄰 Herdr pane。
+5. 從一般 shell pane 使用相同按鍵回到 Neovim。
+6. 使用 `<A-h/j/k/l>` 測試兩邊 resize。
+7. 執行 `:checkhealth herdr-splits` 檢查整合狀態。
+
+## Tmux Integration (Fallback)
 
 This project includes a pre-configured `tmux.conf` in `./tmux/tmux.conf` that seamlessly integrates with Neovim using `smart-splits.nvim`.
 

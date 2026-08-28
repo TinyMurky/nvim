@@ -3,6 +3,8 @@
 -- 案件綁定放在 monitor-split-options.lua
 return {
     "mrjones2014/smart-splits.nvim",
+    -- Herdr 內改由 herdr-splits.nvim 接管相同按鍵，避免 mapping 衝突。
+    cond = vim.env.HERDR_ENV ~= "1",
     config = function()
         require('smart-splits').setup({
             -- Ignored buffer types (only while resizing)

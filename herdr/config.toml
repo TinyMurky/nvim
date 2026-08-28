@@ -1,0 +1,89 @@
+onboarding = false
+
+[terminal]
+new_cwd = "follow"
+
+[keys]
+# 延續你目前 tmux 的 Ctrl-a prefix
+prefix = "ctrl+a"
+# prefix = "ctrl+b"
+
+# 釋放預設的 prefix+h/j/k/l pane 導航
+# 因為已經用直接 Ctrl-h/j/k/l 導航
+focus_pane_left = ""
+focus_pane_down = ""
+focus_pane_up = ""
+focus_pane_right = ""
+
+[[keys.command]]
+key = "ctrl+h"
+type = "plugin_action"
+command = "herdr-splits.nav-left"
+
+[[keys.command]]
+key = "ctrl+j"
+type = "plugin_action"
+command = "herdr-splits.nav-down"
+
+[[keys.command]]
+key = "ctrl+k"
+type = "plugin_action"
+command = "herdr-splits.nav-up"
+
+[[keys.command]]
+key = "ctrl+l"
+type = "plugin_action"
+command = "herdr-splits.nav-right"
+
+[[keys.command]]
+key = "alt+h"
+type = "plugin_action"
+command = "herdr-splits.resize-left"
+
+[[keys.command]]
+key = "alt+j"
+type = "plugin_action"
+command = "herdr-splits.resize-down"
+
+[[keys.command]]
+key = "alt+k"
+type = "plugin_action"
+command = "herdr-splits.resize-up"
+
+[[keys.command]]
+key = "alt+l"
+type = "plugin_action"
+command = "herdr-splits.resize-right"
+
+
+# Herdr 原生只能直接建立「右方」或「下方」pane；要做到 tmux
+#  那種左／上分割，需要「先向右／下分割，再 swap 到左／上」。Herdr CLI 文件
+#  (https://herdr.dev/docs/cli-reference/)
+
+# Prefix+h：在左邊建立 pane
+[[keys.command]]
+key = "prefix+h"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane split --pane "$HERDR_ACTIVE_PANE_ID" --direction right --focus && "$HERDR_BIN_PATH" pane swap --direction left'
+description = "split pane left"
+
+# Prefix+j：在下方建立 pane
+[[keys.command]]
+key = "prefix+j"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane split --pane "$HERDR_ACTIVE_PANE_ID" --direction down --focus'
+description = "split pane down"
+
+# Prefix+k：在上方建立 pane
+[[keys.command]]
+key = "prefix+k"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane split --pane "$HERDR_ACTIVE_PANE_ID" --direction down --focus && "$HERDR_BIN_PATH" pane swap --direction up'
+description = "split pane up"
+
+# Prefix+l：在右邊建立 pane
+[[keys.command]]
+key = "prefix+l"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane split --pane "$HERDR_ACTIVE_PANE_ID" --direction right --focus'
+description = "split pane right"
