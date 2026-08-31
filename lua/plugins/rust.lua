@@ -4,7 +4,7 @@
 -- https://github.com/mrcjkb/rustaceanvim
 return {
     "mrcjkb/rustaceanvim",
-    version = "^5",
+    version = "^9",
     ft = "rust",
     init = function()
         vim.g.rustaceanvim = function()
