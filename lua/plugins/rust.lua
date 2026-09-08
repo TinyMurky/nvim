@@ -21,8 +21,13 @@ return {
                     capabilities = capabilities,
                     default_settings = {
                         ["rust-analyzer"] = {
-                            cargo = { allFeatures = true },
-                            check = { command = "clippy" },
+                            -- cargo = { allFeatures = true },
+                            cargo = { feature = {}, },
+                            -- check = { command = "clippy" },
+                            check = {
+                                command = "check",
+                            },
+                            numThreads = 6,
                         },
                     },
                 },
