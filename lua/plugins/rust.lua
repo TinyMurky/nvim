@@ -21,13 +21,23 @@ return {
                     capabilities = capabilities,
                     default_settings = {
                         ["rust-analyzer"] = {
-                            -- cargo = { allFeatures = true },
-                            cargo = { feature = {}, },
-                            -- check = { command = "clippy" },
+                            -- Keep project loading focused on the default feature set.
+                            -- Use `cargo.features = "all"` only when all features are
+                            -- required for the crate currently being edited.
+                            cargo = {
+                                features = {},
+                                allTargets = false,
+                            },
                             check = {
                                 command = "check",
+                                -- Avoid checking tests, examples and benches on every save.
+                                allTargets = false,
+                                -- Check the package containing the current file instead of
+                                -- re-checking the entire workspace.
+                                workspace = false,
                             },
-                            numThreads = 6,
+                            -- Let rust-analyzer choose based on the available CPU.
+                            -- A fixed value can underuse large machines.
                         },
                     },
                 },
