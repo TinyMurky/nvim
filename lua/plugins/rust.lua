@@ -26,12 +26,18 @@ return {
                             -- required for the crate currently being edited.
                             cargo = {
                                 features = {},
-                                allTargets = false,
+                                -- Load tests, examples and benches so they receive full
+                                -- completion, navigation and semantic analysis.
+                                allTargets = true,
+                            },
+                            -- Analyze code guarded by `#[cfg(test)]`.
+                            cfg = {
+                                setTest = true,
                             },
                             check = {
                                 command = "check",
-                                -- Avoid checking tests, examples and benches on every save.
-                                allTargets = false,
+                                -- Check every target in the current package, including tests.
+                                allTargets = true,
                                 -- Check the package containing the current file instead of
                                 -- re-checking the entire workspace.
                                 workspace = false,
