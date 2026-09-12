@@ -15,6 +15,21 @@
 vim.o.autocomplete = true -- 打字時自動跳出補全選單
 vim.o.autocompletedelay = 50 -- 延遲 50ms 再跳，避免打字被選單追著跑
 
+-- `autocomplete` 是 global-local 選項；外掛的 prompt、檔案樹、終端等特殊
+-- buffer 會繼承全域值。只讓一般檔案 buffer 自動彈出插入模式補全，避免
+-- Neo-tree、Telescope（例如 <leader>fg）等工具視窗出現原生補全選單。
+-- 命令列的 `:`、`/`、`?` 補全由檔案下方的 wildtrigger 設定負責，不受影響。
+local function configure_buffer_autocomplete(buf)
+	vim.bo[buf].autocomplete = vim.bo[buf].buftype == ""
+end
+
+vim.api.nvim_create_autocmd({ "BufEnter", "FileType" }, {
+	group = vim.api.nvim_create_augroup("BufferAutocomplete", { clear = true }),
+	callback = function(args)
+		configure_buffer_autocomplete(args.buf)
+	end,
+})
+
 -- 補全來源，依序（前面的來源會分到比較多時間）：
 --   .  目前 buffer
 --   w  其他視窗的 buffer
